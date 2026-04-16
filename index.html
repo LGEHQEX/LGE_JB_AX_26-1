@@ -309,9 +309,10 @@
 <div class="tab-bar">
     <div class="tab-bar-inner">
         <a href="#education" class="tab-item active">교육 안내</a>
+        <a href="#timetable" class="tab-item">시간표</a>
         <a href="#directions" class="tab-item">찾아오는 길</a>
-        <a href="#faq" class="tab-item">FAQ</a>
         <a href="#confirmation" class="tab-item">교육참가 확인서</a>
+        <a href="#faq" class="tab-item">FAQ</a>
         <a href="#contact" class="tab-item">담당자 연락처</a>
         <a href="#center-life" onclick="openDrawer(); return false;" class="tab-item" style="color:var(--lg-red);font-weight:700;border-bottom:2px solid var(--lg-red);">🏨 러닝센터 생활안내</a>
     </div>
@@ -730,7 +731,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     });
 });
 const tabItems = document.querySelectorAll('.tab-item');
-const tabSections = ['education','directions','faq','confirmation','contact'];
+const tabSections = ['education','timetable','directions','confirmation','faq','contact'];
 function updateActiveTab() {
     const tbH = document.querySelector('.tab-bar').offsetHeight + 20;
     let current = '';
