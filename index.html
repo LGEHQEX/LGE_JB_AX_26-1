@@ -252,7 +252,7 @@
             .venue-grid{grid-template-columns:1fr}
         }
         @media print {
-            @page { margin: 0; size: A4; }
+            @page { margin: 10mm; size: A4; }
             html, body {
                 margin: 0 !important; padding: 0 !important;
                 background: #fff !important;
@@ -264,13 +264,18 @@
                 position: absolute !important;
                 left: 0 !important; top: 0 !important;
                 width: 100% !important;
-                padding: 40px !important;
+                padding: 20px !important;
                 background: #fff !important;
                 border-radius: 0 !important;
                 box-shadow: none !important;
                 border: none !important;
                 margin: 0 !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
             }
+            #printArea h2 { font-size: 1.6rem !important; margin-bottom: 20px !important; }
+            #printArea table td, #printArea table th { padding: 10px 14px !important; font-size: 0.85rem !important; }
+            #printArea > div:last-child { margin-top: 20px !important; padding: 14px 18px !important; }
         }
     </style>
 </head>
@@ -305,10 +310,10 @@
     <div class="tab-bar-inner">
         <a href="#education" class="tab-item active">교육 안내</a>
         <a href="#directions" class="tab-item">찾아오는 길</a>
-        <a href="#center-life" onclick="openDrawer(); return false;" class="tab-item">러닝센터 생활안내</a>
         <a href="#faq" class="tab-item">FAQ</a>
         <a href="#confirmation" class="tab-item">교육참가 확인서</a>
         <a href="#contact" class="tab-item">담당자 연락처</a>
+        <a href="#center-life" onclick="openDrawer(); return false;" class="tab-item" style="color:var(--lg-red);font-weight:700;border-bottom:2px solid var(--lg-red);">🏨 러닝센터 생활안내</a>
     </div>
 </div>
 
@@ -537,52 +542,11 @@
             <span class="notice-icon">📌</span>
             <p><strong>※ 1일차 과정은 러닝센터 나눔관 대강당에서 시작합니다.</strong></p>
         </div>
-    <div style="margin-bottom:40px;">
-            <h3 style="font-size:1.2rem;font-weight:700;color:var(--lg-dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;"><span>🗺️</span> 주요 건물 안내</h3>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
-                <div style="background:var(--lg-white);border:1px solid var(--lg-border);border-radius:12px;padding:20px 16px;text-align:center;box-shadow:var(--card-shadow);">
-                    <div style="font-size:1.5rem;margin-bottom:8px;">🏛️</div>
-                    <div style="font-size:0.92rem;font-weight:700;color:var(--lg-dark);">나눔관</div>
-                    <div style="font-size:0.8rem;color:var(--lg-gray);margin-top:4px;">대강당 · OT/강연</div>
-                </div>
-                <div style="background:var(--lg-white);border:1px solid var(--lg-border);border-radius:12px;padding:20px 16px;text-align:center;box-shadow:var(--card-shadow);">
-                    <div style="font-size:1.5rem;margin-bottom:8px;">📖🛏️🏪</div>
-                    <div style="font-size:0.92rem;font-weight:700;color:var(--lg-dark);">채움관</div>
-                    <div style="font-size:0.8rem;color:var(--lg-gray);margin-top:4px;">분반 강의실/실습 · 숙소 · 편의시설 </div>
-                </div>
-                <div style="background:var(--lg-white);border:1px solid var(--lg-border);border-radius:12px;padding:20px 16px;text-align:center;box-shadow:var(--card-shadow);">
-                    <div style="font-size:1.5rem;margin-bottom:8px;">🍽️</div>
-                    <div style="font-size:0.92rem;font-weight:700;color:var(--lg-dark);">HOUSE 1958</div>
-                    <div style="font-size:0.8rem;color:var(--lg-gray);margin-top:4px;">식당 (Dining Hall)</div>
-                </div>
-            </div>
-        <br>
-        <div style="margin-bottom:28px;">
-            <h3 style="font-size:1.2rem;font-weight:700;color:var(--lg-dark);margin-bottom:16px;display:flex;align-items:center;gap:10px;">
-                <span>🗺️</span>러닝센터 건물 배치도
-            </h3>
-            <div style="width:100%;border-radius:16px;overflow:hidden;border:1px solid var(--lg-border);box-shadow:var(--card-shadow);">
-                <img src="IMG_5537.jpeg" alt="건물배치도" style="display:block;width:100%;height:auto;">
-            </div>
-        </div>
-        </div>
-        <div class="directions-grid">
-            <div class="direction-card">
-                <h4><span class="d-icon">🚗</span>자가용 이용 시</h4>
-                <p><strong>네비게이션:</strong> "LG디지털파크 서문" 검색<br>LG디지털파크 내부 주차 불가, <strong>외부 서문 주차장</strong> 이용<br><span class="notice-text">※ 주차공간 부족으로 가급적 대중교통 또는 통근 버스 이용</span></p>
-            </div>
-            <div class="direction-card">
-                <h4><span class="d-icon">🚌</span>대중교통 이용 시</h4>
-                <p><strong>1) 통근버스:</strong> 오산역 1번 출구 홍약국 앞 탑승<br><span class="notice-text">※ 06:40~07:35까지 10분 간격 배차</span><br><strong>2) 시내버스:</strong> 오산역 or 오산 시외버스터미널 앞 탑승 → LG디지털파크 행<br><strong>3) 택시:</strong> 오산역 or 시외버스터미널에서 약 15분 이내</p>
-            </div>
-            <div class="direction-card">
-                <h4><span class="d-icon">🚌</span>통근버스 이용 시</h4>
-                <p><strong>통근버스 노선 및 시간표 안내:</strong> <a href="https://blog.naver.com/lgdpbus3012" target="_blank" style="color:var(--lg-red);">blog.naver.com/lgdpbus3012</a><br>자세한 탑승 위치는 '같이가' 어플을 통해 확인 가능<br><span class="notice-text">* 별도 사전 신청 없이 ID카드 태깅하여 탑승 가능</span></p>
-            </div>
-            <div class="direction-card">
-                <h4><span class="d-icon">🚘</span>차량 5부제 안내</h4>
-                <p>현재 기준으로 평택 사업장은 차량 5부제 <strong>자율 동참 지역</strong>으로 운영되고 있습니다.<br><span class="notice-text">※ 상황 변동이 잦은 만큼 변경 사항이 발생할 경우 별도로 재공지 드리겠습니다.</span></p>
-            </div>
+        <div style="text-align:center;margin-top:8px;">
+            <button onclick="openDrawer()" style="display:inline-flex;align-items:center;gap:10px;padding:14px 32px;background:var(--lg-red);color:#fff;font-size:0.95rem;font-weight:700;border:none;border-radius:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;box-shadow:0 4px 16px rgba(165,0,52,0.25);transition:all 0.2s;" onmouseover="this.style.background='#8a0028';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='var(--lg-red)';this.style.transform='translateY(0)'">
+                🏨 러닝센터 생활안내 보기
+                <span style="font-size:0.85rem;opacity:0.8;">→</span>
+            </button>
         </div>
     </div>
 </section>
@@ -598,7 +562,7 @@
         </div>
         <button onclick="closeDrawer()" style="width:36px;height:36px;border-radius:50%;border:1px solid var(--lg-border);background:#fff;font-size:1.1rem;cursor:pointer;color:var(--lg-gray);">✕</button>
     </div>
-    <iframe src="https://lgehqtsc.github.io/lgehqtsc/" style="flex:1;width:100%;border:none;"></iframe>
+    <iframe src="https://lgehqex.github.io/learningcenter/" style="flex:1;width:100%;border:none;"></iframe>
 </div>
 <div id="drawerOverlay" onclick="closeDrawer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:999;"></div>
 
