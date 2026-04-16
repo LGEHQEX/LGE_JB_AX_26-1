@@ -772,7 +772,23 @@ function closeDrawer() {
     document.body.style.overflow = '';
 }
 function printConfirmation() {
-    window.print();
+    const content = document.getElementById('printArea').innerHTML;
+    const win = window.open('', '_blank', 'width=800,height=900');
+    win.document.write(`<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap');
+  @page { margin: 15mm; size: A4; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans KR',sans-serif; color:#111; background:#fff; padding:20px; }
+  table { width:100%; border-collapse:collapse; }
+  td { padding:13px 18px; border:1px solid #c8c0b0; font-size:0.9rem; line-height:1.6; }
+</style>
+</head><body>${content}</body></html>`);
+    win.document.close();
+    win.focus();
+    setTimeout(() => { win.print(); win.close(); }, 500);
 }
 const observer = new IntersectionObserver(entries => {
     entries.forEach(e => {
