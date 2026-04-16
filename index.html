@@ -309,7 +309,6 @@
 <div class="tab-bar">
     <div class="tab-bar-inner">
         <a href="#education" class="tab-item active">교육 안내</a>
-        <a href="#timetable" class="tab-item">시간표</a>
         <a href="#directions" class="tab-item">찾아오는 길</a>
         <a href="#confirmation" class="tab-item">교육참가 확인서</a>
         <a href="#faq" class="tab-item">FAQ</a>
@@ -319,12 +318,11 @@
 </div>
 
 <!-- ===== 교육 안내 ===== -->
-<div id="education">
-<section class="day-section" id="curriculum">
+<section class="day-section" id="education">
     <div class="section">
         <div class="section-header">
-            <div class="section-tag">Content</div>
-            <h2>교육 내용</h2>
+            <div class="section-tag">Education</div>
+            <h2>교육 안내</h2>
             <p>AI Tool 실전 활용부터 Agent 설계까지, Junior Board의 역량 강화 집중 과정</p>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:0 0 16px;align-items:stretch;">
@@ -407,12 +405,12 @@
     </div>
 </div>
 <!-- Timetable -->
-<section class="timetable-section" id="timetable">
+<section class="timetable-section">
     <div class="section" style="padding-top:32px;">
-        <div class="section-header">
-            <div class="section-tag">Timetable</div>
-            <h2>교육 운영 상세 시간표</h2>
-            <p></p>
+        <div style="display:flex;align-items:center;gap:12px;margin:40px 0 24px;">
+            <div style="flex:1;height:1px;background:var(--lg-border);"></div>
+            <span style="font-size:0.76rem;font-weight:700;color:var(--lg-gray);letter-spacing:1px;text-transform:uppercase;font-family:'DM Sans',sans-serif;">Timetable</span>
+            <div style="flex:1;height:1px;background:var(--lg-border);"></div>
         </div>
         <div class="timetable-wrapper" style="grid-template-columns:1fr 1fr;">
             <!-- Day 1 -->
@@ -508,7 +506,6 @@
         </div>
     </div>
 </section>
-</div><!-- /education -->
 
 <!-- ===== 찾아오는 길 ===== -->
 <section class="map-section" id="directions">
@@ -752,7 +749,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     });
 });
 const tabItems = document.querySelectorAll('.tab-item');
-const tabSections = ['education','timetable','directions','confirmation','faq','contact'];
+const tabSections = ['education','directions','confirmation','faq','contact'];
 function updateActiveTab() {
     const tbH = document.querySelector('.tab-bar').offsetHeight + 20;
     let current = '';
