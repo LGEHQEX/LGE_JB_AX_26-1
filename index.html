@@ -340,18 +340,42 @@
             </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 0;">
-            <div style="background:#fffbf0;border:1px solid #ffe08a;border-radius:14px;padding:20px 24px;display:flex;align-items:flex-start;gap:14px;">
-                <span style="font-size:1.4rem;flex-shrink:0;">💻</span>
-                <p style="font-size:0.88rem;color:#7a5c00;"><strong style="color:var(--lg-accent);">사내 노트북 준비</strong><br>회사에서 제공된 PC가 아닌 개인 소유 노트북을 지참하실 예정인 경우, 사전 확인을 위해 미리 메일로 알려주시기 바랍니다.</p>
+            <div style="background:#fffbf0;border:1px solid #ffe08a;border-radius:14px;padding:18px 20px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                    <span style="font-size:1.2rem;">💻</span>
+                    <strong style="font-size:0.9rem;color:var(--lg-accent);">사내 노트북 준비</strong>
+                </div>
+                <p style="font-size:0.82rem;color:#7a5c00;line-height:1.6;margin-bottom:12px;">사내에서 제공된 노트북이 아닌 개인 소유 PC 지참 시 방문신청을 통해 노트북 정보 기재 후 반입 가능합니다.</p>
+                <button onclick="openLaptopModal()" style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:var(--lg-red);color:#fff;font-size:0.78rem;font-weight:700;border:none;border-radius:6px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">📎 방문신청 가이드(개인PC)</button>
             </div>
-            <div style="background:#fffbf0;border:1px solid #ffe08a;border-radius:14px;padding:20px 24px;display:flex;align-items:flex-start;gap:14px;cursor:pointer;" onclick="openBeaconModal()">
-                <span style="font-size:1.4rem;flex-shrink:0;">📡</span>
-                <p style="font-size:0.88rem;color:#7a5c00;"><strong style="color:var(--lg-accent);">비콘 출결 준비</strong><br>교육 참가 전 고용24 가입 및 출결관리 어플 설치가 필요합니다. <span style="color:var(--lg-red);font-weight:700;">자세히 보기 →</span></p>
+            <div style="background:#fffbf0;border:1px solid #ffe08a;border-radius:14px;padding:18px 20px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                    <span style="font-size:1.2rem;">📡</span>
+                    <strong style="font-size:0.9rem;color:var(--lg-accent);">비콘 출결 준비</strong>
+                </div>
+                <p style="font-size:0.82rem;color:#7a5c00;line-height:1.6;margin-bottom:12px;">고용24 가입 및 출결관리 어플 설치 필수. 당일 입·퇴실 시 비콘 출결 체크를 해주세요.</p>
+                <button onclick="openBeaconModal()" style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:var(--lg-red);color:#fff;font-size:0.78rem;font-weight:700;border:none;border-radius:6px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">📎 출결 가이드</button>
             </div>
         </div>
 
     </div>
 </section>
+
+<!-- ===== 노트북 반입 팝업 ===== -->
+<div id="laptopModal" style="visibility:hidden;opacity:0;transition:opacity 0.2s;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1100;display:flex;align-items:center;justify-content:center;">
+    <div onclick="closeLaptopModal()" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);"></div>
+    <div style="position:relative;background:#fff;border-radius:20px;padding:36px 32px;max-width:560px;width:90%;max-height:85vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.2);">
+        <button onclick="closeLaptopModal()" style="position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;border:1px solid #e0e0e0;background:#fff;font-size:1rem;cursor:pointer;color:#666;">✕</button>
+        <div style="display:inline-block;background:var(--lg-red);color:#fff;padding:4px 12px;border-radius:20px;font-size:0.76rem;font-weight:700;letter-spacing:0.5px;margin-bottom:12px;font-family:'DM Sans',sans-serif;">💻 개인 노트북 반입 안내</div>
+        <h3 style="font-size:1.2rem;font-weight:800;color:var(--lg-dark);margin-bottom:16px;">방문신청 및 노트북 반입 가이드</h3>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+            <a href="https://lgehqex.github.io/LGE_JB_AX_26-1/%EC%9C%A0%EC%B2%A8.%EB%B0%A9%EB%AC%B8%20%EC%8B%A0%EC%B2%AD%20%EA%B0%80%EC%9D%B4%EB%93%9C.pdf" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:var(--lg-red);color:#fff;font-size:0.84rem;font-weight:700;border-radius:8px;text-decoration:none;">📎 새 창으로 보기 →</a>
+        </div>
+        <div style="border-radius:10px;overflow:hidden;border:1px solid #e8e0e0;">
+            <iframe src="https://lgehqex.github.io/LGE_JB_AX_26-1/%EC%9C%A0%EC%B2%A8.%EB%B0%A9%EB%AC%B8%20%EC%8B%A0%EC%B2%AD%20%EA%B0%80%EC%9D%B4%EB%93%9C.pdf" style="width:100%;height:440px;border:none;"></iframe>
+        </div>
+    </div>
+</div>
 
 <!-- ===== 비콘 출결 팝업 ===== -->
 <div id="beaconModal" style="visibility:hidden;opacity:0;transition:opacity 0.2s;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1100;display:flex;align-items:center;justify-content:center;">
@@ -400,6 +424,12 @@
                 <div style="background:#f7f7f7;border-radius:8px;padding:12px 16px;font-size:0.86rem;color:var(--lg-dark);line-height:1.6;">
                     ③ 입실(퇴실) 시간 확인 후 어플 종료
                 </div>
+            </div>
+            <div style="text-align:center;margin-top:16px;">
+                <a href="https://lgehqex.github.io/LGE_JB_AX_26-1/%EC%9C%A0%EC%B2%A8.%EA%B3%A0%EC%9A%A924%20%EC%A7%81%EC%97%85%ED%9B%88%EB%A0%A8%20%EC%B6%9C%EA%B2%B0%EA%B0%80%EC%9D%B4%EB%93%9C.pdf" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;background:#6a4c93;color:#fff;font-size:0.88rem;font-weight:700;border-radius:8px;text-decoration:none;">📎 출결 가이드 새 창으로 보기 →</a>
+            </div>
+            <div style="margin-top:16px;border-radius:10px;overflow:hidden;border:1px solid #e8e0e0;">
+                <iframe src="https://lgehqex.github.io/LGE_JB_AX_26-1/%EC%9C%A0%EC%B2%A8.%EA%B3%A0%EC%9A%A924%20%EC%A7%81%EC%97%85%ED%9B%88%EB%A0%A8%20%EC%B6%9C%EA%B2%B0%EA%B0%80%EC%9D%B4%EB%93%9C.pdf" style="width:100%;height:400px;border:none;"></iframe>
             </div>
         </div>
     </div>
@@ -542,7 +572,7 @@
         </div>
         <div style="text-align:center;margin-top:8px;">
             <button onclick="openDrawer()" style="display:inline-flex;align-items:center;gap:10px;padding:14px 32px;background:var(--lg-red);color:#fff;font-size:0.95rem;font-weight:700;border:none;border-radius:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;box-shadow:0 4px 16px rgba(165,0,52,0.25);transition:all 0.2s;" onmouseover="this.style.background='#8a0028';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='var(--lg-red)';this.style.transform='translateY(0)'">
-                🏨 러닝센터 생활안내 보기
+                🏨 (필독) 러닝센터 생활안내 보기
                 <span style="font-size:0.85rem;opacity:0.8;">→</span>
             </button>
         </div>
@@ -770,6 +800,16 @@ function toggleFaq(el) {
     document.querySelectorAll('.faq-item').forEach(f => { f.classList.remove('open'); f.querySelector('.faq-answer').style.maxHeight = null; });
     if (!isOpen) { item.classList.add('open'); answer.style.maxHeight = answer.scrollHeight + 'px'; }
 }
+function openLaptopModal() {
+    const m = document.getElementById('laptopModal');
+    m.style.visibility = 'visible';
+    m.style.opacity = '1';
+}
+function closeLaptopModal() {
+    const m = document.getElementById('laptopModal');
+    m.style.visibility = 'hidden';
+    m.style.opacity = '0';
+}
 function openBeaconModal() {
     const m = document.getElementById('beaconModal');
     m.style.visibility = 'visible';
@@ -781,6 +821,10 @@ function closeBeaconModal() {
     m.style.opacity = '0';
 }
 function openDrawer() {
+    if (window.innerWidth < 768) {
+        window.open('https://lgehqex.github.io/learningcenter/', '_blank');
+        return;
+    }
     document.getElementById('centerLifeDrawer').style.right = '0';
     document.getElementById('drawerOverlay').style.display = 'block';
     document.body.style.overflow = 'hidden';
