@@ -274,9 +274,12 @@
             .must-read-cards { grid-template-columns:1fr; }
             .directions-grid { grid-template-columns:1fr; }
             .venue-grid { grid-template-columns:1fr; }
-            .contact-grid { grid-template-columns:1fr 1fr !important; }
-
-            /* Inline grids → 1열 (contact-grid 제외) */
+            .contact-grid { grid-template-columns:1fr !important; }
+            .contact-card { padding:14px 16px; text-align:left !important; flex-direction:row !important; align-items:center; gap:12px; display:flex !important; }
+            .contact-card .contact-icon { margin:0 !important; width:36px !important; height:36px !important; flex-shrink:0; font-size:1rem !important; }
+            .contact-card h4 { font-size:0.88rem; }
+            .contact-card .contact-role { font-size:0.72rem; margin-bottom:4px; }
+            .contact-card .contact-info { font-size:0.78rem; word-break:break-all; }
             div[style*="grid-template-columns:1fr 1fr 1fr"] { grid-template-columns:1fr !important; }
             div[style*="grid-template-columns:repeat(3"] { grid-template-columns:1fr !important; }
             div[style*="grid-template-columns:repeat(2"] { grid-template-columns:1fr !important; }
@@ -322,10 +325,6 @@
 
             /* Cards */
             .must-read-card { padding:20px 16px; }
-            .contact-card { padding:16px 14px; }
-            .contact-card h4 { font-size:0.88rem; }
-            .contact-card .contact-role { font-size:0.72rem; }
-            .contact-card .contact-info { font-size:0.78rem; }
 
             /* 교육참가 확인서 모바일 숨김 */
             #confirmation { display:none !important; }
