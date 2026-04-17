@@ -239,19 +239,96 @@
 
         /* ── RESPONSIVE ── */
         @media(max-width:768px){
-            nav ul{display:none}
-            .hero h1{font-size:2.5rem}
-            .day-cards{grid-template-columns:1fr}
-            .must-read-cards{grid-template-columns:1fr}
-            .timetable-section .section{padding:48px 16px}
-            .timetable-wrapper{grid-template-columns:1fr}
-            .tt-table-wrap{overflow-x:auto}
-            .tt-table{min-width:480px;table-layout:auto}
-            .directions-grid{grid-template-columns:1fr}
-            .contact-grid{grid-template-columns:1fr}
-            .venue-grid{grid-template-columns:1fr}
+            nav ul { display:none }
+
+            /* Hero */
+            header { padding:28px 20px 22px; }
+            .hero h1 { font-size:1.6rem; letter-spacing:-0.3px; }
+            .hero .subtitle { font-size:0.88rem; }
+            .hero-meta { gap:10px; margin-top:14px; }
+            .hero-meta-value { font-size:12px; }
+            .hero-meta-label { font-size:9px; }
+
+            /* Tab bar */
+            .tab-bar-inner { justify-content:flex-start; padding:0 12px; }
+            .tab-item { padding:12px 14px; font-size:0.82rem; }
+
+            /* Sections */
+            .section { padding:40px 16px; }
+            .section-header h2 { font-size:1.5rem; }
+            .section-header p { font-size:0.88rem; }
+
+            /* Info cards → 1열 */
+            .info-grid-3 { grid-template-columns:1fr !important; }
+
+            /* Notice cards → 1열 */
+            .notice-grid-2 { grid-template-columns:1fr !important; }
+
+            /* Day cards */
+            .day-cards { grid-template-columns:1fr }
+            .must-read-cards { grid-template-columns:1fr }
+
+            /* Timetable */
+            .timetable-section .section { padding:32px 16px; }
+            .timetable-wrapper { grid-template-columns:1fr !important; }
+            .tt-table-wrap { overflow-x:auto }
+            .tt-table { min-width:360px; table-layout:auto; font-size:0.82rem; }
+            .tt-table tbody td { padding:9px 10px; }
+            .tt-tag { font-size:0.6rem; padding:1px 5px; }
+
+            /* Venue/directions */
+            .directions-grid { grid-template-columns:1fr }
+            .contact-grid { grid-template-columns:1fr }
+            .venue-grid { grid-template-columns:1fr }
+
+            /* FAQ */
+            .faq-answer-inner { padding:0 16px 14px 16px; }
+
+            /* Contact */
+            .contact-card { padding:20px 18px; }
+
+            /* Must-read */
+            .must-read-card { padding:24px 20px; }
+
+            /* Inline grids (info cards, notice cards) */
+            div[style*="grid-template-columns:1fr 1fr 1fr"] { grid-template-columns:1fr !important; }
+            div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns:1fr !important; }
+            div[style*="grid-template-columns:repeat(3"] { grid-template-columns:1fr !important; }
+            div[style*="grid-template-columns:repeat(2"] { grid-template-columns:1fr !important; }
+
+            /* Buttons */
+            button[onclick="openGroupModal()"] { width:100%; justify-content:center; }
+            button[onclick="openDrawer()"] { width:100%; justify-content:center; }
         }
-        @media print {
+        /* Mobile timetable tabs */
+        .tt-mobile-tabs { display:none; }
+        @media(max-width:768px){
+            .tab-pc-only { display:none !important; }
+                display:flex;
+                gap:0;
+                border-radius:10px;
+                overflow:hidden;
+                border:1px solid var(--lg-border);
+                margin-bottom:16px;
+            }
+            .tt-mobile-tab {
+                flex:1;
+                padding:11px 0;
+                text-align:center;
+                font-size:0.88rem;
+                font-weight:700;
+                cursor:pointer;
+                background:#f5f5f5;
+                color:var(--lg-gray);
+                border:none;
+                transition:all 0.2s;
+                font-family:'Noto Sans KR',sans-serif;
+            }
+            .tt-mobile-tab.active-day1 { background:var(--lg-red); color:#fff; }
+            .tt-mobile-tab.active-day2 { background:#1a1a2e; color:#fff; }
+            .timetable-wrapper { grid-template-columns:1fr !important; }
+            .tt-table-wrap.tt-hidden { display:none; }
+        }
             @page { margin: 10mm; size: A4; }
             html, body {
                 margin: 0 !important; padding: 0 !important;
@@ -310,7 +387,7 @@
     <div class="tab-bar-inner">
         <a href="#education" class="tab-item active">교육 안내</a>
         <a href="#directions" class="tab-item">찾아오는 길</a>
-        <a href="#confirmation" class="tab-item">교육참가 확인서</a>
+        <a href="#confirmation" class="tab-item tab-pc-only">교육참가 확인서</a>
         <a href="#faq" class="tab-item">FAQ</a>
         <a href="#contact" class="tab-item">담당자 연락처</a>
         <a href="#" onclick="openExpenseDrawer(); return false;" class="tab-item" style="color:var(--lg-red);font-weight:700;">💼 국내 출장비 품의</a>
@@ -443,9 +520,13 @@
             <span style="font-size:0.76rem;font-weight:700;color:var(--lg-gray);letter-spacing:1px;text-transform:uppercase;font-family:'DM Sans',sans-serif;">Timetable</span>
             <div style="flex:1;height:1px;background:var(--lg-border);"></div>
         </div>
+        <div class="tt-mobile-tabs">
+            <button class="tt-mobile-tab active-day1" onclick="switchTtTab(1)">📅 DAY 1 · 1일차</button>
+            <button class="tt-mobile-tab" onclick="switchTtTab(2)">📅 DAY 2 · 2일차</button>
+        </div>
         <div class="timetable-wrapper" style="grid-template-columns:1fr 1fr;">
             <!-- Day 1 -->
-            <div class="tt-table-wrap">
+            <div class="tt-table-wrap" id="tt-day1">
                 <div class="tt-table-header day1">
                     <h3>1일차 일정 <span style="font-size:0.76rem;font-weight:400;opacity:0.7;">(6시간)</span></h3>
                     <span class="day-label">DAY 1</span>
@@ -496,7 +577,7 @@
                 </table>
             </div>
             <!-- Day 2 -->
-            <div class="tt-table-wrap">
+            <div class="tt-table-wrap" id="tt-day2">
                 <div class="tt-table-header day2">
                     <h3>2일차 일정 <span style="font-size:0.76rem;font-weight:400;opacity:0.7;">(6시간)</span></h3>
                     <span class="day-label">DAY 2</span>
@@ -850,6 +931,32 @@ function toggleFaq(el) {
     const isOpen = item.classList.contains('open');
     document.querySelectorAll('.faq-item').forEach(f => { f.classList.remove('open'); f.querySelector('.faq-answer').style.maxHeight = null; });
     if (!isOpen) { item.classList.add('open'); answer.style.maxHeight = answer.scrollHeight + 'px'; }
+}
+function switchTtTab(day) {
+    if (window.innerWidth > 768) return;
+    const day1 = document.getElementById('tt-day1');
+    const day2 = document.getElementById('tt-day2');
+    const tabs = document.querySelectorAll('.tt-mobile-tab');
+    if (day === 1) {
+        day1.classList.remove('tt-hidden');
+        day2.classList.add('tt-hidden');
+        tabs[0].classList.add('active-day1');
+        tabs[0].classList.remove('active-day2');
+        tabs[1].classList.remove('active-day1', 'active-day2');
+    } else {
+        day2.classList.remove('tt-hidden');
+        day1.classList.add('tt-hidden');
+        tabs[1].classList.add('active-day2');
+        tabs[1].classList.remove('active-day1');
+        tabs[0].classList.remove('active-day1', 'active-day2');
+    }
+}
+// 모바일 초기 상태: day2 숨김
+if (window.innerWidth <= 768) {
+    document.addEventListener('DOMContentLoaded', () => {
+        const day2 = document.getElementById('tt-day2');
+        if (day2) day2.classList.add('tt-hidden');
+    });
 }
 function openGroupModal() {
     const m = document.getElementById('groupModal');
