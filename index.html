@@ -296,9 +296,12 @@
             div[style*="grid-template-columns:repeat(3"] { grid-template-columns:1fr !important; }
             div[style*="grid-template-columns:repeat(2"] { grid-template-columns:1fr !important; }
 
-            /* Buttons */
-            button[onclick="openGroupModal()"] { width:100%; justify-content:center; }
-            button[onclick="openDrawer()"] { width:100%; justify-content:center; }
+            /* 교육참가 확인서 섹션 모바일 숨김 */
+            #confirmation { display:none !important; }
+            /* 분반 확인 입력창 모바일 */
+            #groupIdInput { font-size:16px !important; }
+            .group-input-row { flex-direction:column !important; }
+            .group-input-row button { width:100% !important; }
         }
         /* Mobile timetable tabs */
         .tt-mobile-tabs { display:none; }
@@ -634,7 +637,7 @@
         <div style="display:inline-block;background:var(--lg-red);color:#fff;padding:4px 12px;border-radius:20px;font-size:0.76rem;font-weight:700;margin-bottom:12px;font-family:'DM Sans',sans-serif;">🔍 분반 확인</div>
         <h3 style="font-size:1.2rem;font-weight:800;color:var(--lg-dark);margin-bottom:6px;">나의 분반 확인하기</h3>
         <p style="font-size:0.86rem;color:var(--lg-gray);margin-bottom:20px;">사번을 입력하면 배정된 분반을 확인할 수 있습니다.</p>
-        <div style="display:flex;gap:10px;margin-bottom:16px;">
+        <div class="group-input-row" style="display:flex;gap:10px;margin-bottom:16px;">
             <input id="groupIdInput" type="text" placeholder="사번 입력" onkeydown="if(event.key==='Enter') checkGroup()"
                 style="flex:1;padding:12px 16px;border:1.5px solid var(--lg-border);border-radius:10px;font-size:0.95rem;font-family:'Noto Sans KR',sans-serif;outline:none;"
                 onfocus="this.style.borderColor='var(--lg-red)'" onblur="this.style.borderColor='var(--lg-border)'">
