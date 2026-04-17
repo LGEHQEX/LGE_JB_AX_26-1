@@ -243,6 +243,11 @@
         @media(max-width:768px){
             nav ul { display:none }
 
+            /* 가로 스크롤 방지 */
+            html, body { overflow-x:hidden; max-width:100vw; }
+            * { max-width:100%; }
+            img, iframe { max-width:100% !important; }
+
             /* Base */
             body { font-size: 13px; }
 
@@ -333,10 +338,13 @@
             /* 팝업 모달 */
             #beaconModal > div:last-child,
             #laptopModal > div:last-child,
-            #groupModal > div:last-child { 
+            #groupModal > div:last-child {
                 padding:24px 20px !important;
                 max-height:90vh;
+                width:95% !important;
             }
+            /* 드로어 모바일 */
+            #centerLifeDrawer, #expenseDrawer { width:100% !important; }
         }
         @media print {
             @page { margin: 10mm; size: A4; }
