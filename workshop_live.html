@@ -415,12 +415,33 @@ async function savePeerReview(reviewerId, reviewData) {
 function sendToSheets(type, data) {
   if (!SHEETS_WEBHOOK_URL) return;
   try {
-    fetch(SHEETS_WEBHOOK_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type, ...data, timestamp: new Date().toISOString() })
-    });
+    const payload = { type, ...data, timestamp: new Date().toISOString() };
+    // Google Apps Script는 form data 또는 URL parameter로 받는 게 더 안정적
+    // no-cors + JSON은 body가 전달되지 않을 수 있으므로 방식 변경
+    const form = document.createElement('iframe');
+    form.style.display = 'none';
+    form.name = 'sheets_frame_' + Date.now();
+    document.body.appendChild(form);
+    
+    const f = document.createElement('form');
+    f.method = 'POST';
+    f.action = SHEETS_WEBHOOK_URL;
+    f.target = form.name;
+    
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'payload';
+    input.value = JSON.stringify(payload);
+    f.appendChild(input);
+    
+    document.body.appendChild(f);
+    f.submit();
+    
+    // 정리
+    setTimeout(() => {
+      document.body.removeChild(f);
+      document.body.removeChild(form);
+    }, 5000);
   } catch (e) {
     console.warn('Sheets webhook failed:', e);
   }
