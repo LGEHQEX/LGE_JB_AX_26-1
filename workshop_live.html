@@ -305,7 +305,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 // ============ Google Sheets Webhook (설정 후 URL 교체) ============
-const SHEETS_WEBHOOK_URL = ''; // Google Apps Script 웹 앱 URL을 여기에 입력
+const SHEETS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzVRfombiQapis3cq28V2hoHJxIF6HEqqqlOSGNVWhdwUGZzliKcQWu6IPNS6qyDIHS/exec';
 
 // ============ Firebase Data Functions ============
 // 캐시: 로컬에 Firebase 데이터를 미러링
@@ -354,6 +354,8 @@ async function saveVote(voterId, scores) {
     await db.ref(path).set(scores);
     if (!fbCache.votes[state.cls]) fbCache.votes[state.cls] = {};
     fbCache.votes[state.cls][voterId] = scores;
+    // Google Sheets 백업
+    sendToSheets('vote', { cls: state.cls, voterId, scores });
   } catch (e) {
     console.error('Firebase vote save error:', e);
     showToast('❌ 저장 실패. 네트워크를 확인하세요.');
@@ -399,6 +401,10 @@ async function savePeerReview(reviewerId, reviewData) {
     await db.ref(path).set(payload);
     if (!fbCache.peers[state.cls]) fbCache.peers[state.cls] = {};
     fbCache.peers[state.cls][reviewerId] = payload;
+    // Google Sheets 백업
+    const subs = loadSubmissions();
+    const teamData = subs[state.team] || {};
+    sendToSheets('peer', { cls: state.cls, teamIdx: state.team, ...payload, members: teamData.members || [] });
   } catch (e) {
     console.error('Firebase peer save error:', e);
     showToast('❌ 저장 실패. 네트워크를 확인하세요.');
