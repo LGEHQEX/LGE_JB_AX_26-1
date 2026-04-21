@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -267,6 +266,8 @@ const TEAMS = ['Team 1', 'Team 2', 'Team 3', 'Team 4', 'Team 5', 'Team 6'];
 function storageKey(cls) { return 'jb_ax_ws_' + cls; }
 function voteKey(cls) { return 'jb_ax_vote_' + cls; }
 
+function peerKey(cls) { return 'jb_ax_peer_' + cls; }
+
 let state = {
   screen: 'splash',
   cls: null,    // 반 인덱스 (0~4)
@@ -304,18 +305,45 @@ function loadVotes() {
   try { return JSON.parse(localStorage.getItem(voteKey(state.cls)) || '{}'); }
   catch { return {}; }
 }
-function saveVote(voterKey, teamIndices) {
+function saveVote(voterKey, scores) {
+  // scores = { 0: {s1:30,s2:30,s3:30,s4:10}, 1: {...}, ... }
   const all = loadVotes();
-  all[voterKey] = teamIndices;
+  all[voterKey] = scores;
   localStorage.setItem(voteKey(state.cls), JSON.stringify(all));
 }
-function getVoteCounts() {
+function getScoreSummary() {
   const all = loadVotes();
-  const counts = [0,0,0,0,0,0];
-  Object.values(all).forEach(indices => {
-    indices.forEach(i => { if (i >= 0 && i < 6) counts[i]++; });
+  // 팀별 합산: { teamIdx: { s1총합, s2총합, s3총합, s4총합, total, voterCount } }
+  const summary = {};
+  for (let i = 0; i < 6; i++) {
+    summary[i] = { s1: 0, s2: 0, s3: 0, s4: 0, total: 0, count: 0 };
+  }
+  Object.values(all).forEach(voterScores => {
+    Object.entries(voterScores).forEach(([teamIdx, scores]) => {
+      const t = parseInt(teamIdx);
+      if (t >= 0 && t < 6 && scores) {
+        summary[t].s1 += (scores.s1 || 0);
+        summary[t].s2 += (scores.s2 || 0);
+        summary[t].s3 += (scores.s3 || 0);
+        summary[t].s4 += (scores.s4 || 0);
+        summary[t].total += (scores.s1||0) + (scores.s2||0) + (scores.s3||0) + (scores.s4||0);
+        summary[t].count++;
+      }
+    });
   });
-  return counts;
+  return summary;
+}
+function getTotalVoterCount() {
+  return Object.keys(loadVotes()).length;
+}
+function loadPeerReviews() {
+  try { return JSON.parse(localStorage.getItem(peerKey(state.cls)) || '{}'); }
+  catch { return {}; }
+}
+function savePeerReview(reviewerId, reviewData) {
+  const all = loadPeerReviews();
+  all[reviewerId] = { ...reviewData, submittedAt: new Date().toISOString() };
+  localStorage.setItem(peerKey(state.cls), JSON.stringify(all));
 }
 
 function showToast(msg) {
@@ -340,6 +368,7 @@ function render() {
     case 'submitted': app.innerHTML = renderSubmitted(); break;
     case 'afternoon': app.innerHTML = renderAfternoon(); break;
     case 'allDone': app.innerHTML = renderAllDone(); break;
+    case 'peerReview': app.innerHTML = renderPeerReview(); break;
     case 'editSelect': app.innerHTML = renderEditSelect(); break;
     case 'voting': app.innerHTML = renderVoting(); break;
     case 'voteDone': app.innerHTML = renderVoteDone(); break;
@@ -733,8 +762,11 @@ function renderAllDone() {
           ${TEAMS[state.team]}의 전체 워크시트(오전 토론 + 오후 실습)가<br>
           FT에게 전달되었습니다. 발표 준비 화이팅!
         </div>
-        <button class="btn-primary" onclick="setState({screen:'voting'})" style="max-width:320px;margin:0 auto 16px">
-          ❤️ 좋아요 투표 하러 가기
+        <button class="btn-primary" onclick="setState({screen:'peerReview'})" style="max-width:320px;margin:0 auto 16px">
+          👥 팀원 상호 평가 →
+        </button>
+        <button class="btn-secondary" onclick="setState({screen:'voting'})" style="max-width:320px;margin:0 auto 12px">
+          📊 다른 팀 심사 →
         </button>
         <button class="btn-secondary" onclick="goEditSelect()" style="max-width:320px;margin:0 auto 12px">
           ✏️ 제출 내용 수정하기
@@ -747,7 +779,181 @@ function renderAllDone() {
   `;
 }
 
-// ====== Step 5: 발표용 PT 자료 제작 ======
+// ====== Peer Review (상호 평가) ======
+function renderPeerReview() {
+  const reviewerId = 'peer_' + (localStorage.getItem('jb_reviewer_id') || (() => {
+    const id = Math.random().toString(36).substr(2, 8);
+    localStorage.setItem('jb_reviewer_id', id);
+    return id;
+  })());
+  const allReviews = loadPeerReviews();
+  const myReview = allReviews[reviewerId] || {};
+
+  // 본인 팀 데이터에서 팀원 이름 가져오기
+  const subs = loadSubmissions();
+  const teamData = subs[state.team] || state.data || {};
+  const members = (teamData.members || []).filter(m => m.trim());
+
+  // 본인 팀 자기 평가 항목
+  const selfCriteria = [
+    { key: 'ts1', label: '실현 가능성', max: 30, desc: '실무 적용 가능?' },
+    { key: 'ts2', label: 'Prototype 완성도', max: 30, desc: '구체적 결과물?' },
+    { key: 'ts3', label: '발표 명확성', max: 30, desc: '설득력 있는 설명?' },
+    { key: 'ts4', label: '팀 참여도', max: 10, desc: '전원 적극 참여?' },
+  ];
+
+  // 팀원 평가 항목
+  const peerCriteria = [
+    { key: 'participation', label: '참여도', desc: '팀 토론에 적극적으로 참여했다' },
+    { key: 'responsibility', label: '책임감', desc: 'Case Study에서 맡은 역할을 잘 수행하였다' },
+    { key: 'collaboration', label: '협업능력', desc: '모든 팀원들과 원활하게 협업하였다' },
+  ];
+
+  const selfScores = myReview.selfScores || {};
+  const selfTotal = (selfScores.ts1||0) + (selfScores.ts2||0) + (selfScores.ts3||0) + (selfScores.ts4||0);
+  const peerScores = myReview.peerScores || {};
+  const reviewerName = myReview.reviewerName || '';
+
+  return `
+    ${renderHeader(CLASSES[state.cls] + ' · 상호 평가', true, 'goBackToAllDone')}
+    <div class="container">
+      <div class="red-line"></div>
+
+      <!-- 평가자 이름 -->
+      <div class="card" style="border-top:3px solid var(--red);margin-bottom:20px">
+        <div class="input-group" style="margin-bottom:0">
+          <label class="input-label" style="font-size:15px">✍️ 평가자 이름 (본인)</label>
+          <input type="text" value="${esc(reviewerName)}"
+                 oninput="updatePeerField('${reviewerId}', 'reviewerName', this.value)"
+                 placeholder="본인 이름을 입력하세요" style="font-size:16px;font-weight:600">
+        </div>
+      </div>
+
+      <!-- 본인 팀 자기 평가 -->
+      <div class="page-title" style="font-size:20px;margin-bottom:4px">🏆 본인 팀 자기 평가</div>
+      <div class="page-sub">${TEAMS[state.team]} · 우리 팀의 결과물을 스스로 평가해주세요</div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <span style="font-size:15px;font-weight:700">총 100점</span>
+          <span style="font-size:22px;font-weight:900;color:var(--red)">${selfTotal}점</span>
+        </div>
+        ${selfCriteria.map(c => `
+          <div style="margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <span style="font-size:13px;font-weight:600">${c.label} <span style="color:var(--gray);font-weight:400">${c.desc}</span></span>
+              <span style="font-size:14px;color:var(--red);font-weight:700">${selfScores[c.key] !== undefined ? selfScores[c.key] : 0} / ${c.max}</span>
+            </div>
+            <input type="range" min="0" max="${c.max}" value="${selfScores[c.key] || 0}"
+                   oninput="updateSelfScore('${reviewerId}', '${c.key}', parseInt(this.value))"
+                   style="width:100%;accent-color:var(--red);height:28px">
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- 팀원 상호 평가 -->
+      <div class="page-title" style="font-size:20px;margin-bottom:4px">👥 팀원 상호 평가</div>
+      <div class="page-sub">함께한 팀원들을 평가해주세요 (5점 척도)</div>
+
+      ${members.length > 0 ? members.map((member, mIdx) => {
+        const ms = peerScores[mIdx] || {};
+        return `
+          <div class="card" style="margin-bottom:14px">
+            <div class="card-title" style="margin-bottom:14px">
+              <span class="num">${mIdx + 1}</span>
+              <span style="font-size:16px;font-weight:800">${esc(member)}</span>
+            </div>
+            ${peerCriteria.map(c => `
+              <div style="margin-bottom:12px">
+                <div style="font-size:13px;font-weight:600;margin-bottom:2px">${c.label}</div>
+                <div style="font-size:12px;color:var(--gray);margin-bottom:6px">${c.desc}</div>
+                <div class="scale-options">
+                  ${[1,2,3,4,5].map(v => `
+                    <button class="scale-btn ${ms[c.key] === v ? 'active' : ''}"
+                            onclick="updatePeerScore('${reviewerId}', ${mIdx}, '${c.key}', ${v})">${v}</button>
+                  `).join('')}
+                </div>
+                <div class="scale-labels" style="margin-top:2px"><span>부족</span><span>매우 우수</span></div>
+              </div>
+            `).join('')}
+            <div style="margin-top:8px">
+              <label class="input-label" style="font-size:13px">💬 한 줄 코멘트 (선택)</label>
+              <input type="text" value="${esc(ms.comment || '')}"
+                     oninput="updatePeerScore('${reviewerId}', ${mIdx}, 'comment', this.value)"
+                     placeholder="이 팀원에게 한마디..." style="font-size:14px">
+            </div>
+          </div>
+        `;
+      }).join('') : `
+        <div class="card" style="text-align:center;color:var(--gray);padding:30px">
+          팀원 정보가 없습니다. 워크시트의 '팀 소개'에서 팀원 이름을 먼저 입력해주세요.
+        </div>
+      `}
+
+      <!-- 제출 -->
+      <div style="margin-top:24px">
+        <button class="btn-primary" onclick="submitPeerReview('${reviewerId}')" style="background:var(--green)">
+          ✅ 상호 평가 제출
+        </button>
+        <div style="text-align:center;margin-top:12px">
+          <button onclick="setState({screen:'voting'})"
+                  style="font-size:13px;color:var(--gray);background:none;border:none;cursor:pointer;font-family:inherit;text-decoration:underline">
+            건너뛰고 다른 팀 심사로 →
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function updatePeerField(reviewerId, field, value) {
+  const all = loadPeerReviews();
+  if (!all[reviewerId]) all[reviewerId] = {};
+  all[reviewerId][field] = value;
+  all[reviewerId].teamIdx = state.team;
+  all[reviewerId].cls = state.cls;
+  localStorage.setItem(peerKey(state.cls), JSON.stringify(all));
+}
+
+function updateSelfScore(reviewerId, key, value) {
+  const all = loadPeerReviews();
+  if (!all[reviewerId]) all[reviewerId] = {};
+  if (!all[reviewerId].selfScores) all[reviewerId].selfScores = {};
+  all[reviewerId].selfScores[key] = value;
+  all[reviewerId].teamIdx = state.team;
+  localStorage.setItem(peerKey(state.cls), JSON.stringify(all));
+  render();
+}
+
+function updatePeerScore(reviewerId, memberIdx, key, value) {
+  const all = loadPeerReviews();
+  if (!all[reviewerId]) all[reviewerId] = {};
+  if (!all[reviewerId].peerScores) all[reviewerId].peerScores = {};
+  if (!all[reviewerId].peerScores[memberIdx]) all[reviewerId].peerScores[memberIdx] = {};
+  all[reviewerId].peerScores[memberIdx][key] = value;
+  all[reviewerId].teamIdx = state.team;
+  localStorage.setItem(peerKey(state.cls), JSON.stringify(all));
+  if (key !== 'comment') render();
+}
+
+function submitPeerReview(reviewerId) {
+  const all = loadPeerReviews();
+  const review = all[reviewerId] || {};
+  if (!review.reviewerName) {
+    showToast('❗ 평가자 이름을 입력해주세요');
+    return;
+  }
+  review.submitted = true;
+  review.teamIdx = state.team;
+  all[reviewerId] = review;
+  localStorage.setItem(peerKey(state.cls), JSON.stringify(all));
+  showToast('✅ 상호 평가가 제출되었습니다');
+  setTimeout(() => setState({ screen: 'voting' }), 1000);
+}
+
+function goBackToAllDone() {
+  setState({ screen: 'allDone' });
+}
 function renderStep5() {
   const d = state.data;
   const slideLabels = [
@@ -877,90 +1083,133 @@ function renderStep6() {
 
 function renderVoting() {
   const subs = loadSubmissions();
-  const counts = getVoteCounts();
   const voterId = 'voter_' + (localStorage.getItem('jb_voter_id') || (() => {
     const id = Math.random().toString(36).substr(2, 8);
     localStorage.setItem('jb_voter_id', id);
     return id;
   })());
-  const myVotes = loadVotes()[voterId] || [];
-  const remaining = 2 - myVotes.length;
+  const allVotes = loadVotes();
+  const myScores = allVotes[voterId] || {};
+  const myTeamIdx = state.team; // 본인 팀 (null이면 체크 안 함)
+
+  // 심사 항목
+  const criteria = [
+    { key: 's1', label: '실현 가능성', max: 30, desc: '실무 적용 가능?' },
+    { key: 's2', label: 'Prototype 완성도', max: 30, desc: '구체적 결과물?' },
+    { key: 's3', label: '발표 명확성', max: 30, desc: '설득력 있는 설명?' },
+    { key: 's4', label: '팀 참여도', max: 10, desc: '전원 적극 참여?' },
+  ];
+
+  // 채점 완료된 팀 수
+  const scoredTeams = Object.keys(myScores).length;
+  const totalTeams = myTeamIdx !== null ? 5 : 6; // 본인 팀 제외
 
   return `
-    ${renderHeader(CLASSES[state.cls] + ' · 좋아요 투표', true, 'goBackToTeamSelect')}
+    ${renderHeader(CLASSES[state.cls] + ' · 심사 투표', true, 'goBackToTeamSelect')}
     <div class="container">
       <div class="red-line"></div>
-      <div class="page-title">❤️ 좋아요 투표</div>
-      <div class="page-sub">가장 우리 본부에 도입하고 싶은 Plan에 투표하세요</div>
+      <div class="page-title">📊 팀별 심사 투표</div>
+      <div class="page-sub">각 팀의 발표를 듣고 항목별로 점수를 매겨주세요 (총 100점)</div>
 
       <!-- 심사 기준 안내 -->
       <div class="card" style="border-top:3px solid var(--red);margin-bottom:20px">
-        <div style="font-size:15px;font-weight:800;margin-bottom:14px">📋 심사 기준 (총 100점)</div>
-        <div style="display:flex;gap:6px;margin-bottom:16px">
-          <div style="flex:1;text-align:center;padding:10px 4px;background:var(--bg);border-radius:8px">
-            <div style="font-size:22px;font-weight:900;color:var(--red)">30점</div>
-            <div style="font-size:11px;font-weight:700;margin-top:4px">실현 가능성</div>
-            <div style="font-size:10px;color:var(--gray)">실무 적용?</div>
-          </div>
-          <div style="flex:1;text-align:center;padding:10px 4px;background:var(--bg);border-radius:8px">
-            <div style="font-size:22px;font-weight:900;color:var(--red)">30점</div>
-            <div style="font-size:11px;font-weight:700;margin-top:4px">Prototype</div>
-            <div style="font-size:10px;color:var(--gray)">구체적 결과물?</div>
-          </div>
-          <div style="flex:1;text-align:center;padding:10px 4px;background:var(--bg);border-radius:8px">
-            <div style="font-size:22px;font-weight:900;color:var(--red)">30점</div>
-            <div style="font-size:11px;font-weight:700;margin-top:4px">발표 명확성</div>
-            <div style="font-size:10px;color:var(--gray)">설득력?</div>
-          </div>
-          <div style="flex:1;text-align:center;padding:10px 4px;background:var(--bg);border-radius:8px">
-            <div style="font-size:22px;font-weight:900;color:var(--red)">10점</div>
-            <div style="font-size:11px;font-weight:700;margin-top:4px">팀 참여도</div>
-            <div style="font-size:10px;color:var(--gray)">전원 참여?</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <div style="flex:1;height:1px;background:var(--border)"></div>
-          <span style="font-size:12px;color:var(--gray);white-space:nowrap">FT 심사 60점 + 참가자 투표 40점</span>
-          <div style="flex:1;height:1px;background:var(--border)"></div>
-        </div>
-        <div style="margin-top:12px;font-size:13px;color:var(--dark);text-align:center;line-height:1.8">
-          <strong style="color:var(--red)">여러분의 투표 = 40점!</strong><br>
-          "우리 본부에 도입하고 싶은 Plan"에 투표해주세요
+        <div style="font-size:14px;font-weight:800;margin-bottom:10px">📋 심사 기준 (총 100점)</div>
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          ${criteria.map(c => `
+            <div style="flex:${c.max >= 30 ? 3 : 1};text-align:center;padding:8px 4px;background:var(--bg);border-radius:8px">
+              <div style="font-size:20px;font-weight:900;color:var(--red)">${c.max}점</div>
+              <div style="font-size:11px;font-weight:700;margin-top:2px">${c.label}</div>
+            </div>
+          `).join('')}
         </div>
       </div>
-      
+
       <div class="vote-remaining">
-        ${remaining > 0 
-          ? `🗳 남은 투표: <strong>${remaining}표</strong> (본인 팀 제외, 최대 2표)`
-          : '✅ 투표가 완료되었습니다!'
-        }
+        📝 채점 진행: <strong>${scoredTeams} / ${totalTeams}팀</strong> 완료
+        ${scoredTeams >= totalTeams ? ' ✅' : ''}
       </div>
 
       ${TEAMS.map((name, i) => {
         const sub = subs[i];
         const teamName = sub ? (sub.teamName || name) : name;
         const planTitle = sub ? (sub.priority || '미제출') : '미제출';
-        const voted = myVotes.includes(i);
+        const ts = myScores[i] || {};
+        const teamTotal = (ts.s1||0) + (ts.s2||0) + (ts.s3||0) + (ts.s4||0);
+        const isMyTeam = myTeamIdx !== null && myTeamIdx === i;
+        const hasScore = ts.s1 !== undefined;
+
+        if (isMyTeam) {
+          return `
+            <div class="card" style="opacity:0.5;margin-bottom:14px">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="font-size:28px;font-weight:900;color:var(--gray)">${String(i+1).padStart(2,'0')}</div>
+                <div>
+                  <div style="font-size:16px;font-weight:700;color:var(--gray)">${esc(teamName)}</div>
+                  <div style="font-size:13px;color:var(--gray)">본인 팀 (채점 불가)</div>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
         return `
-          <div class="vote-card ${voted ? 'voted' : ''}" onclick="castVote(${i}, '${voterId}')">
-            <div class="team-num">${String(i+1).padStart(2,'0')}</div>
-            <div class="team-name">${esc(teamName)}</div>
-            <div style="font-size:13px;color:var(--gray);margin-top:4px">${esc(planTitle)}</div>
-            <div class="heart">${voted ? '❤️' : '🤍'}</div>
+          <div class="card" style="border:${hasScore?'2px solid var(--green)':'1px solid var(--border)'};margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="font-size:28px;font-weight:900;color:var(--red)">${String(i+1).padStart(2,'0')}</div>
+                <div>
+                  <div style="font-size:16px;font-weight:700">${esc(teamName)}</div>
+                  <div style="font-size:12px;color:var(--gray)">${esc(planTitle)}</div>
+                </div>
+              </div>
+              ${hasScore ? `<div style="text-align:center">
+                <div style="font-size:24px;font-weight:900;color:var(--red)">${teamTotal}</div>
+                <div style="font-size:11px;color:var(--gray)">/ 100</div>
+              </div>` : ''}
+            </div>
+            
+            ${criteria.map(c => `
+              <div style="margin-bottom:10px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                  <span style="font-size:13px;font-weight:600">${c.label}</span>
+                  <span style="font-size:13px;color:var(--red);font-weight:700">${ts[c.key] !== undefined ? ts[c.key] : '-'} / ${c.max}</span>
+                </div>
+                <input type="range" min="0" max="${c.max}" value="${ts[c.key] || 0}"
+                       oninput="updateScore('${voterId}', ${i}, '${c.key}', parseInt(this.value))"
+                       style="width:100%;accent-color:var(--red);height:28px">
+              </div>
+            `).join('')}
           </div>
         `;
       }).join('')}
+
+      ${scoredTeams >= totalTeams ? `
+        <div style="margin-top:20px">
+          <button class="btn-primary" onclick="setState({screen:'voteDone'})" style="background:var(--green)">
+            ✅ 채점 완료
+          </button>
+        </div>
+      ` : ''}
     </div>
   `;
 }
 
+function updateScore(voterId, teamIdx, criteriaKey, value) {
+  const allVotes = loadVotes();
+  if (!allVotes[voterId]) allVotes[voterId] = {};
+  if (!allVotes[voterId][teamIdx]) allVotes[voterId][teamIdx] = {};
+  allVotes[voterId][teamIdx][criteriaKey] = value;
+  localStorage.setItem(voteKey(state.cls), JSON.stringify(allVotes));
+  render();
+}
+
 function renderVoteDone() {
   return `
-    ${renderHeader('투표 완료')}
+    ${renderHeader('채점 완료')}
     <div class="container">
       <div class="success-screen">
-        <div class="success-icon">❤️</div>
-        <div class="page-title" style="margin-bottom:12px">투표 완료!</div>
+        <div class="success-icon">🏆</div>
+        <div class="page-title" style="margin-bottom:12px">채점 완료!</div>
         <div class="page-sub">결과는 발표 시간에 공개됩니다</div>
         <button class="btn-secondary" onclick="setState({screen:'splash'})" style="max-width:320px;margin:0 auto">
           처음으로 돌아가기
@@ -1023,9 +1272,9 @@ function renderFtClassSelect() {
 
 function renderFtDashboard() {
   const subs = loadSubmissions();
-  const counts = getVoteCounts();
-  const maxVote = Math.max(...counts, 1);
+  const summary = getScoreSummary();
   const submittedCount = Object.keys(subs).length;
+  const maxTotal = Math.max(...Object.values(summary).map(s => s.total), 1);
 
   return `
     ${renderHeader(CLASSES[state.cls] + ' · FT 대시보드', true, 'goFtClassSelect')}
@@ -1035,11 +1284,15 @@ function renderFtDashboard() {
       <div style="display:flex;gap:10px;margin-bottom:24px">
         <div class="card" style="flex:1;text-align:center;margin:0">
           <div style="font-size:32px;font-weight:900;color:var(--red)">${submittedCount}/6</div>
-          <div style="font-size:13px;color:var(--gray)">제출 완료</div>
+          <div style="font-size:13px;color:var(--gray)">워크시트 제출</div>
         </div>
         <div class="card" style="flex:1;text-align:center;margin:0">
-          <div style="font-size:32px;font-weight:900;color:var(--red)">${counts.reduce((a,b)=>a+b,0)}</div>
-          <div style="font-size:13px;color:var(--gray)">총 투표 수</div>
+          <div style="font-size:32px;font-weight:900;color:var(--red)">${getTotalVoterCount()}</div>
+          <div style="font-size:13px;color:var(--gray)">채점 참여자</div>
+        </div>
+        <div class="card" style="flex:1;text-align:center;margin:0">
+          <div style="font-size:32px;font-weight:900;color:var(--red)">${Object.values(loadPeerReviews()).filter(r=>r.submitted).length}</div>
+          <div style="font-size:13px;color:var(--gray)">상호 평가</div>
         </div>
       </div>
 
@@ -1066,26 +1319,32 @@ function renderFtDashboard() {
         `;
       }).join('')}
 
-      <div class="page-title" style="font-size:20px;margin:32px 0 16px">❤️ 좋아요 투표 현황</div>
+      <div class="page-title" style="font-size:20px;margin:32px 0 16px">📊 심사 점수 현황</div>
+      <div style="font-size:13px;color:var(--gray);margin-bottom:16px">채점 참여: ${getTotalVoterCount()}명 · 팀별 합산 점수</div>
       ${TEAMS.map((name, i) => {
         const sub = subs[i];
         const teamName = sub ? (sub.teamName || name) : name;
-        const pct = maxVote > 0 ? Math.round(counts[i] / maxVote * 100) : 0;
+        const s = summary[i];
+        const pct = maxTotal > 0 ? Math.round(s.total / maxTotal * 100) : 0;
+        const avg = s.count > 0 ? Math.round(s.total / s.count) : 0;
         return `
-          <div class="vote-bar-container">
+          <div class="vote-bar-container" style="margin-bottom:16px">
             <div class="vote-bar-label">
               <span>${esc(teamName)}</span>
-              <span style="color:var(--red);font-weight:800">${counts[i]}표</span>
+              <span style="color:var(--red);font-weight:800">${s.total}점 ${s.count > 0 ? `(평균 ${avg})` : ''}</span>
             </div>
             <div class="vote-bar-bg">
-              <div class="vote-bar-fill" style="width:${pct}%">${counts[i] > 0 ? counts[i] : ''}</div>
+              <div class="vote-bar-fill" style="width:${pct}%">${s.total > 0 ? s.total : ''}</div>
             </div>
+            ${s.count > 0 ? `<div style="display:flex;gap:4px;margin-top:4px;font-size:11px;color:var(--gray)">
+              <span>실현 ${s.s1}</span> · <span>완성도 ${s.s2}</span> · <span>발표 ${s.s3}</span> · <span>참여 ${s.s4}</span>
+            </div>` : ''}
           </div>
         `;
       }).join('')}
 
       <div style="margin-top:32px">
-        <button class="btn-secondary" onclick="if(confirm(CLASSES[state.cls]+' 데이터를 초기화합니다. 정말?')){localStorage.removeItem(storageKey(state.cls));localStorage.removeItem(voteKey(state.cls));showToast('초기화 완료');render()}" style="color:var(--gray);border-color:var(--border)">
+        <button class="btn-secondary" onclick="if(confirm(CLASSES[state.cls]+' 데이터를 초기화합니다. 정말?')){localStorage.removeItem(storageKey(state.cls));localStorage.removeItem(voteKey(state.cls));localStorage.removeItem(peerKey(state.cls));showToast('초기화 완료');render()}" style="color:var(--gray);border-color:var(--border)">
           🗑 이 반 데이터 초기화
         </button>
       </div>
@@ -1209,6 +1468,32 @@ function renderFtDetail() {
           ${sub.protoLesson ? `<div class="card" style="margin-bottom:8px"><strong style="font-size:13px;color:var(--red)">배운 점:</strong><p style="font-size:14px;margin-top:4px">${esc(sub.protoLesson)}</p></div>` : ''}
         </div>` : ''}
       ` : ''}
+
+      ${(() => {
+        // 상호 평가 결과 표시
+        const reviews = Object.values(loadPeerReviews()).filter(r => r.submitted && r.teamIdx === idx);
+        if (reviews.length === 0) return '';
+        return `
+          <div style="margin:28px 0 16px;padding:12px;background:var(--dark);border-radius:8px;text-align:center">
+            <span style="color:var(--white);font-size:14px;font-weight:700">👥 팀원 상호 평가 (${reviews.length}명 제출)</span>
+          </div>
+          ${reviews.map(r => `
+            <div class="card" style="margin-bottom:10px">
+              <div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:8px">평가자: ${esc(r.reviewerName || '익명')}</div>
+              ${r.selfScores ? `<div style="font-size:13px;color:var(--gray);margin-bottom:8px">
+                자기 평가: 실현 ${r.selfScores.ts1||0} + 완성도 ${r.selfScores.ts2||0} + 발표 ${r.selfScores.ts3||0} + 참여 ${r.selfScores.ts4||0} = <strong style="color:var(--red)">${(r.selfScores.ts1||0)+(r.selfScores.ts2||0)+(r.selfScores.ts3||0)+(r.selfScores.ts4||0)}점</strong>
+              </div>` : ''}
+              ${r.peerScores ? Object.entries(r.peerScores).map(([mIdx, ms]) => {
+                const memberName = (sub.members || [])[parseInt(mIdx)] || 'Member ' + (parseInt(mIdx)+1);
+                return `<div style="font-size:12px;padding:6px 10px;background:var(--bg);border-radius:6px;margin-bottom:4px">
+                  <strong>${esc(memberName)}</strong>: 참여 ${ms.participation||'-'} · 책임 ${ms.responsibility||'-'} · 협업 ${ms.collaboration||'-'}
+                  ${ms.comment ? ` · "${esc(ms.comment)}"` : ''}
+                </div>`;
+              }).join('') : ''}
+            </div>
+          `).join('')}
+        `;
+      })()}
 
       <button class="btn-primary" onclick="setState({screen:'ftDashboard'})">← 대시보드로 돌아가기</button>
     </div>
@@ -1361,36 +1646,6 @@ function renderEditSelect() {
       `).join('')}
     </div>
   `;
-}
-
-function castVote(teamIdx, voterId) {
-  const votes = loadVotes();
-  const myVotes = votes[voterId] || [];
-  
-  // 이미 투표한 팀이면 취소
-  if (myVotes.includes(teamIdx)) {
-    votes[voterId] = myVotes.filter(v => v !== teamIdx);
-    localStorage.setItem(VOTE_KEY, JSON.stringify(votes));
-    showToast('투표를 취소했습니다');
-    return;
-  }
-  
-  // 2표 제한
-  if (myVotes.length >= 2) {
-    showToast('❗ 최대 2표까지만 투표 가능합니다');
-    return;
-  }
-  
-  // 본인 팀 체크 (team이 설정된 경우)
-  if (state.team !== null && teamIdx === state.team) {
-    showToast('❗ 본인 팀에는 투표할 수 없습니다');
-    return;
-  }
-  
-  myVotes.push(teamIdx);
-  votes[voterId] = myVotes;
-  localStorage.setItem(VOTE_KEY, JSON.stringify(votes));
-  showToast('❤️ 투표 완료!');
 }
 
 function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
