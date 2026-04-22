@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M365 Copilot 체크리스트 & 설문</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f4f2ee;
+    --surface: #ffffff;
+    --accent: #c8440a;
+    --accent2: #1a3a5c;
+    --text: #1c1c1c;
+    --muted: #888;
+    --border: #ddd;
+    --header-h: 56px;
+  }
+
+  html, body { height: 100%; font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); }
+
+  /* ── Header ── */
+  header {
+    height: var(--header-h);
+    background: var(--accent2);
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    gap: 16px;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,.25);
+  }
+  .badge {
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    padding: 3px 9px;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+  header h1 {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -.01em;
+  }
+  header .sub {
+    color: rgba(255,255,255,.5);
+    font-size: 13px;
+    margin-left: auto;
+  }
+
+  /* ── Split layout ── */
+  .split {
+    display: flex;
+    height: calc(100vh - var(--header-h));
+    margin-top: var(--header-h);
+  }
+
+  /* ── Panels ── */
+  .panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .panel-left { border-right: 2px solid var(--border); }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .panel-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .icon-pdf  { background: #fff0eb; color: var(--accent); }
+  .icon-form { background: #ebf2ff; color: var(--accent2); }
+
+  .panel-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .panel-desc {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  iframe {
+    flex: 1;
+    width: 100%;
+    border: none;
+    display: block;
+    background: #fff;
+  }
+
+  /* ── Divider handle ── */
+  .divider {
+    width: 4px;
+    background: var(--border);
+    cursor: col-resize;
+    position: relative;
+    flex-shrink: 0;
+    transition: background .2s;
+  }
+  .divider:hover { background: var(--accent2); }
+  .divider::after {
+    content: '⋮';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--muted);
+    font-size: 18px;
+    pointer-events: none;
+  }
+
+  /* ── Responsive: mobile stack ── */
+  @media (max-width: 700px) {
+    .split { flex-direction: column; height: auto; }
+    .panel { height: 50vh; }
+    .panel-left { border-right: none; border-bottom: 2px solid var(--border); }
+    .divider { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="badge">JB · AX</span>
+  <h1>M365 Copilot 체크리스트 &amp; 활용 설문</h1>
+  <span class="sub">Junior Board AX 역량 강화 과정</span>
+</header>
+
+<div class="split" id="split">
+
+  <!-- LEFT: PDF -->
+  <div class="panel panel-left" id="panelLeft">
+    <div class="panel-header">
+      <div class="panel-icon icon-pdf">📄</div>
+      <div>
+        <div class="panel-title">M365 Copilot 체크리스트</div>
+        <div class="panel-desc">사전 점검 자료 — PDF 뷰어</div>
+      </div>
+    </div>
+    <iframe
+      src="https://docs.google.com/viewer?url=https://raw.githubusercontent.com/LGEHQEX/LGE_JB_AX_26-1/main/M365%20Copilot_checklist.pdf&embedded=true"
+      title="M365 Copilot 체크리스트 PDF">
+    </iframe>
+  </div>
+
+  <!-- Drag divider -->
+  <div class="divider" id="divider"></div>
+
+  <!-- RIGHT: 설문 -->
+  <div class="panel panel-right" id="panelRight">
+    <div class="panel-header">
+      <div class="panel-icon icon-form">📝</div>
+      <div>
+        <div class="panel-title">AX 활용 설문</div>
+        <div class="panel-desc">Moaform 설문 응답</div>
+      </div>
+    </div>
+    <iframe
+      src="https://answer.moaform.com/answers/Ebgl6V"
+      title="AX 활용 설문">
+    </iframe>
+  </div>
+
+</div>
+
+<script>
+  // ── Drag-to-resize ──
+  const divider   = document.getElementById('divider');
+  const split     = document.getElementById('split');
+  const panelLeft = document.getElementById('panelLeft');
+  const panelRight= document.getElementById('panelRight');
+  let dragging = false;
+
+  divider.addEventListener('mousedown', e => {
+    dragging = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    // overlay iframes so they don't swallow events
+    document.querySelectorAll('iframe').forEach(f => f.style.pointerEvents = 'none');
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const rect = split.getBoundingClientRect();
+    let ratio = (e.clientX - rect.left) / rect.width;
+    ratio = Math.max(0.2, Math.min(0.8, ratio));
+    panelLeft.style.flex  = 'none';
+    panelLeft.style.width = (ratio * 100) + '%';
+    panelRight.style.flex = '1';
+    panelRight.style.width = '';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    document.querySelectorAll('iframe').forEach(f => f.style.pointerEvents = '');
+  });
+</script>
+</body>
+</html>
