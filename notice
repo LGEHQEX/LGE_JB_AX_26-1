@@ -1,0 +1,612 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Junior Board AX 역량 강화 과정 · 사전 OT 안내</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F8F7F4;
+    --card: #FFFFFF;
+    --accent: #A50034;
+    --accent-light: #FFF0F3;
+    --accent-mid: #D4194D;
+    --text: #1A1A1A;
+    --text-secondary: #5A5A5A;
+    --text-muted: #8C8C8C;
+    --border: #E8E6E1;
+    --highlight: #FFF8E1;
+    --tag-bg: #F0EDEA;
+    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+    --shadow-lg: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.35;
+    color: var(--text);
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+
+  .header h1 span {
+    color: var(--accent);
+  }
+
+  .header-sub {
+    font-size: 15px;
+    color: var(--text-secondary);
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .divider {
+    width: 40px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+    margin: 32px auto;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 36px;
+  }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .section-title {
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  /* Table */
+  .class-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .class-table thead {
+    background: var(--accent);
+    color: white;
+  }
+
+  .class-table thead th {
+    padding: 13px 16px;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .class-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  .class-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .class-table tbody tr:hover {
+    background: var(--accent-light);
+  }
+
+  .class-table td {
+    padding: 14px 16px;
+    vertical-align: middle;
+  }
+
+  .class-num {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 15px;
+  }
+
+  .room-tag {
+    display: inline-block;
+    background: var(--tag-bg);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .name-role {
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .name-role small {
+    color: var(--text-muted);
+    font-weight: 400;
+    font-size: 12px;
+    display: block;
+    margin-top: 2px;
+  }
+
+  .ft-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+    color: var(--text);
+    font-size: 13px;
+  }
+
+  .ft-badge .ft-tag {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+  }
+
+  .location-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 14px 16px;
+    background: #FAFAF8;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .location-bar span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .location-bar .icon {
+    font-size: 14px;
+  }
+
+  /* Rules */
+  .rule-card {
+    background: var(--card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    margin-bottom: 14px;
+  }
+
+  .rule-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .rule-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .rule-icon.red { background: #FFF0F3; }
+  .rule-icon.amber { background: #FFF3E0; }
+
+  .rule-header h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .rule-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .rule-list li {
+    position: relative;
+    padding: 6px 0 6px 20px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  .rule-list li::before {
+    content: '·';
+    position: absolute;
+    left: 6px;
+    font-weight: 900;
+    color: var(--accent);
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
+  .warning-box {
+    background: var(--highlight);
+    border: 1px solid #F5E6B8;
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #6D5A00;
+    font-weight: 500;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .warning-box .w-icon { flex-shrink: 0; font-size: 15px; }
+
+  /* Checklist */
+  .checklist {
+    list-style: none;
+    padding: 0;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .checklist li:last-child { border-bottom: none; }
+
+  .check-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--accent-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .check-content strong {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .check-content span {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* Contact */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 4px;
+  }
+
+  .contact-card {
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 18px;
+    box-shadow: var(--shadow);
+  }
+
+  .contact-card .label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .contact-card .name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .contact-card .dept {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 3px;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer p {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .footer .sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-top: 6px;
+  }
+
+  .footer .rocket { font-size: 28px; margin-bottom: 10px; }
+
+  .internal-tag {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 32px 16px 60px; }
+    .header h1 { font-size: 22px; }
+    .class-table { font-size: 13px; }
+    .class-table thead th, .class-table td { padding: 10px 10px; }
+    .contact-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">🎓 사전 OT 안내</div>
+    <h1>전사 Junior Board<br><span>AX 역량 강화 과정</span></h1>
+    <p class="header-sub">1박 2일 교육 참여를 앞두고<br>반드시 확인해주셔야 할 사항을 안내드립니다.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Section 1: 반별 안내 -->
+  <div class="section">
+    <div class="section-label">01 — 반별 안내</div>
+    <h2 class="section-title">담당자 · 강의실 · FT 배정</h2>
+    <div class="card">
+      <table class="class-table">
+        <thead>
+          <tr>
+            <th>반</th>
+            <th>강의실</th>
+            <th>운영 담당자</th>
+            <th>FT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="class-num">1반</span></td>
+            <td><span class="room-tag">201호</span></td>
+            <td><span class="name-role">이능경 <small>선임</small></span></td>
+            <td><span class="ft-badge"><span class="ft-tag">MS</span> 김영민 <small style="color:#8C8C8C; font-size:11px;">&nbsp;JB 부대표</small></span></td>
+          </tr>
+          <tr>
+            <td><span class="class-num">2반</span></td>
+            <td><span class="room-tag">205호</span></td>
+            <td><span class="name-role">최부경 <small>선임</small></span></td>
+            <td><span class="ft-badge"><span class="ft-tag">MS</span> 백지아 <small style="color:#8C8C8C; font-size:11px;">&nbsp;JB 대표</small></span></td>
+          </tr>
+          <tr>
+            <td><span class="class-num">3반</span></td>
+            <td><span class="room-tag">301호</span></td>
+            <td><span class="name-role">조은선 <small>사원</small></span></td>
+            <td><span class="ft-badge"><span class="ft-tag">S</span> 박찬욱 <small style="color:#8C8C8C; font-size:11px;">&nbsp;한영본 간사</small></span></td>
+          </tr>
+          <tr>
+            <td><span class="class-num">4반</span></td>
+            <td><span class="room-tag">302호</span></td>
+            <td><span class="name-role">이헌정 <small>사원</small></span></td>
+            <td><span class="ft-badge"><span class="ft-tag">S</span> 이재훈 <small style="color:#8C8C8C; font-size:11px;">&nbsp;본사 간사</small></span></td>
+          </tr>
+          <tr>
+            <td><span class="class-num">5반</span></td>
+            <td><span class="room-tag">303호</span></td>
+            <td><span class="name-role">이윤지 <small>사원</small></span></td>
+            <td><span class="ft-badge"><span class="ft-tag">C</span> 정진석 <small style="color:#8C8C8C; font-size:11px;">&nbsp;생기원 간사</small></span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="location-bar">
+        <span><span class="icon">📍</span> 평택 러닝센터</span>
+        <span><span class="icon">📌</span> 본인 반 확인 → 사전 공지된 반 편성표 참고</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: 2대 준수사항 -->
+  <div class="section">
+    <div class="section-label">02 — 필수 안내</div>
+    <h2 class="section-title">꼭 지켜주세요 — 2대 준수 사항</h2>
+
+    <div class="rule-card">
+      <div class="rule-header">
+        <div class="rule-icon red">🚫</div>
+        <h3>외부 음주 금지</h3>
+      </div>
+      <ul class="rule-list">
+        <li>1일차 저녁 JB 네트워킹 세션 외 외부에서의 개별 음주는 일절 금지</li>
+        <li>석식 및 자유 교류는 <strong>아지트(사내)</strong>에서 진행되며, 외부 이탈 시 안전·보안 사고 우려로 제한</li>
+        <li>교육 일정 중 숙소 복귀 후 개별 음주도 삼가 (익일 08:30 정상 진행)</li>
+      </ul>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-header">
+        <div class="rule-icon red">🔒</div>
+        <h3>데이터 유출 절대 금지</h3>
+      </div>
+      <ul class="rule-list">
+        <li>교육 중 다루는 업무 시나리오·VOE·본부 자료는 <strong>전사 내부 자산</strong>입니다.</li>
+        <li>AI Tool 실습 시 개인 계정·외부 클라우드·공개 LLM에 업로드 절대 금지</li>
+        <li>실습 산출물은 사내 승인 Tool(<strong>EXAONE · Copilot · Gemini 사내판</strong>) 내에서만 처리</li>
+        <li>스크린샷·녹화·SNS 공유 금지</li>
+      </ul>
+    </div>
+
+    <div class="warning-box">
+      <span class="w-icon">⚠️</span>
+      <span>위반 시 보안 규정에 따라 조치될 수 있으니 반드시 유념해주세요. — <strong>LGE Internal Use Only</strong></span>
+    </div>
+  </div>
+
+  <!-- Section 3: 사전 준비 -->
+  <div class="section">
+    <div class="section-label">03 — 준비물</div>
+    <h2 class="section-title">사전 준비 사항</h2>
+    <div class="card">
+      <ul class="checklist">
+        <li>
+          <span class="check-icon">💻</span>
+          <div class="check-content">
+            <strong>업무용 노트북</strong>
+            <span>충전기 포함</span>
+          </div>
+        </li>
+        <li>
+          <span class="check-icon">🪪</span>
+          <div class="check-content">
+            <strong>사원증</strong>
+            <span>출입 확인용</span>
+          </div>
+        </li>
+        <li>
+          <span class="check-icon">📱</span>
+          <div class="check-content">
+            <strong>AI Tool 사내 계정 사전 로그인 확인</strong>
+            <span>EXAONE / Copilot / Gemini</span>
+          </div>
+        </li>
+        <li>
+          <span class="check-icon">🎒</span>
+          <div class="check-content">
+            <strong>1박 2일 개인 세면 용품</strong>
+            <span>숙박 준비물</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Section 4: 문의 -->
+  <div class="section">
+    <div class="section-label">04 — 문의</div>
+    <h2 class="section-title">문의처 안내</h2>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="label">공통 문의</div>
+        <div class="name">이지연 사원</div>
+        <div class="dept">Employee eXperience & Growth팀</div>
+      </div>
+      <div class="contact-card">
+        <div class="label">교육 총괄</div>
+        <div class="name">유홍은 책임</div>
+        <div class="dept">Employee eXperience & Growth팀</div>
+      </div>
+    </div>
+    <p style="font-size:13px; color:var(--text-muted); margin-top:14px; text-align:center;">
+      반별 문의는 각 반 운영 담당자에게 개별 연락 부탁드립니다.
+    </p>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="rocket">🚀</div>
+    <p>함께 의미 있는 2일 만들어봐요!</p>
+    <p class="sub">Junior Board 여러분의 적극적인 참여를 기대합니다.</p>
+    <div class="internal-tag">LGE INTERNAL USE ONLY</div>
+  </div>
+
+</div>
+</body>
+</html>
