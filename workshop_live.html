@@ -500,21 +500,28 @@ function setupFirebaseListeners(cls) {
   activeListeners.push(() => peerRef.off());
 }
 
-// 연결 상태 감지
+// 연결 상태 감지 (초기 로딩 시 깜빡임 방지)
+let offlineTimer = null;
 db.ref('.info/connected').on('value', snap => {
   const el = document.getElementById('conn-status');
   if (snap.val() === true) {
+    if (offlineTimer) { clearTimeout(offlineTimer); offlineTimer = null; }
     el.className = 'conn-status conn-online';
     el.textContent = '';
   } else {
-    el.className = 'conn-status conn-offline';
-    el.textContent = '⚠ 오프라인 - 네트워크 연결을 확인하세요';
+    // 3초 후에도 연결 안 되면 오프라인 표시
+    if (!offlineTimer) {
+      offlineTimer = setTimeout(() => {
+        el.className = 'conn-status conn-offline';
+        el.textContent = '⚠ 오프라인 - 네트워크 연결을 확인하세요';
+      }, 3000);
+    }
   }
 });
 
 // ============ Simple State Management ============
 const CLASSES = ['1반', '2반', '3반', '4반', '5반'];
-const TEAMS = ['Team 1', 'Team 2', 'Team 3', 'Team 4', 'Team 5', 'Team 6'];
+const TEAMS = ['A팀', 'B팀', 'C팀', 'D팀', 'E팀', 'F팀'];
 
 let state = {
   screen: 'splash',
