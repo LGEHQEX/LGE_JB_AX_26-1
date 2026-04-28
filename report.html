@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 JB AX 역량강화 Mini Workshop 운영 결과 보고</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #C8102E;
+  --red-light: #FDE7EA;
+  --dark: #1A1A1A;
+  --white: #FFFFFF;
+  --gray: #6B7280;
+  --light: #F9FAFB;
+  --border: #E5E7EB;
+  --green: #059669;
+  --gold: #D97706;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Noto Sans KR', -apple-system, sans-serif;
+  background: var(--light);
+  color: var(--dark);
+  line-height: 1.7;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ====== Print ====== */
+@media print {
+  .no-print { display: none !important; }
+  .page-break { page-break-before: always; }
+  body { background: white; }
+  .report-container { max-width: 100%; padding: 0; }
+  .section { break-inside: avoid; }
+}
+
+/* ====== Loading ====== */
+.loading-screen {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--dark); z-index: 9999;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: white; transition: opacity 0.5s;
+}
+.loading-screen.hide { opacity: 0; pointer-events: none; }
+.loading-spin {
+  width: 48px; height: 48px; border: 4px solid rgba(255,255,255,0.2);
+  border-top-color: var(--red); border-radius: 50%;
+  animation: spin 0.8s linear infinite; margin-bottom: 20px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ====== Layout ====== */
+.report-container {
+  max-width: 1100px; margin: 0 auto; padding: 0 24px 60px;
+}
+
+/* ====== Cover ====== */
+.cover {
+  background: var(--dark);
+  padding: 80px 0 60px;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.cover::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 6px; background: var(--red);
+}
+.cover::after {
+  content: 'AX'; position: absolute; right: -30px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 280px; font-weight: 900; color: rgba(255,255,255,0.03);
+  letter-spacing: -10px;
+}
+.cover-inner {
+  max-width: 1100px; margin: 0 auto; padding: 0 40px;
+  position: relative; z-index: 1;
+}
+.cover-label {
+  font-size: 12px; color: var(--gray); letter-spacing: 3px;
+  text-transform: uppercase; margin-bottom: 16px;
+}
+.cover h1 {
+  font-size: 44px; font-weight: 900; color: white;
+  line-height: 1.25; margin-bottom: 8px;
+}
+.cover h1 span { color: var(--red); }
+.cover-sub {
+  font-size: 18px; color: var(--gray); margin-bottom: 40px;
+}
+.cover-meta {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+}
+.cover-meta-item {
+  border-left: 3px solid var(--red); padding-left: 16px;
+}
+.cover-meta-item dt { font-size: 11px; color: var(--gray); margin-bottom: 4px; }
+.cover-meta-item dd { font-size: 14px; color: white; font-weight: 500; }
+
+/* ====== Section ====== */
+.section {
+  margin-bottom: 40px;
+}
+.section-title {
+  font-size: 24px; font-weight: 900; color: var(--dark);
+  padding-bottom: 12px; margin-bottom: 24px;
+  border-bottom: 3px solid var(--red);
+  display: flex; align-items: center; gap: 12px;
+}
+.section-title .badge {
+  background: var(--red); color: white;
+  padding: 4px 14px; border-radius: 4px;
+  font-size: 13px; font-weight: 700;
+}
+
+/* ====== Stats ====== */
+.stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  margin-bottom: 32px;
+}
+.stat-card {
+  background: white; border-radius: 12px;
+  padding: 24px; text-align: center;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.stat-card.highlight {
+  background: var(--red); border-color: var(--red);
+}
+.stat-num {
+  font-size: 48px; font-weight: 900; color: var(--red);
+  line-height: 1;
+}
+.stat-card.highlight .stat-num { color: white; }
+.stat-label { font-size: 14px; font-weight: 700; color: var(--dark); margin-top: 8px; }
+.stat-card.highlight .stat-label { color: white; }
+.stat-sub { font-size: 12px; color: var(--gray); margin-top: 4px; }
+.stat-card.highlight .stat-sub { color: rgba(255,255,255,0.7); }
+
+/* ====== Class Tab ====== */
+.class-tabs {
+  display: flex; gap: 8px; margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.class-tab {
+  padding: 10px 24px; border-radius: 8px;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; border: 2px solid var(--border);
+  background: white; color: var(--dark);
+  transition: all 0.2s;
+}
+.class-tab:hover { border-color: var(--red); color: var(--red); }
+.class-tab.active {
+  background: var(--red); color: white; border-color: var(--red);
+}
+
+/* ====== Team Card ====== */
+.team-card {
+  background: white; border-radius: 14px;
+  border: 1px solid var(--border);
+  margin-bottom: 20px; overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.team-header {
+  background: var(--dark); color: white;
+  padding: 16px 24px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.team-header h3 { font-size: 18px; font-weight: 800; }
+.team-header .team-badge {
+  background: var(--red); padding: 4px 14px;
+  border-radius: 4px; font-size: 13px; font-weight: 700;
+}
+.team-body { padding: 24px; }
+.team-members {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+}
+.member-chip {
+  background: var(--light); padding: 6px 14px;
+  border-radius: 20px; font-size: 13px; font-weight: 500;
+  border: 1px solid var(--border);
+}
+
+/* ====== Q&A Block ====== */
+.qa-block { margin-bottom: 20px; }
+.qa-label {
+  font-size: 12px; font-weight: 700; color: var(--red);
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.qa-question {
+  font-size: 15px; font-weight: 700; color: var(--dark);
+  margin-bottom: 8px;
+}
+.qa-answer {
+  font-size: 14px; color: #374151; line-height: 1.8;
+  background: var(--light); padding: 14px 18px;
+  border-radius: 8px; border-left: 3px solid var(--red);
+  white-space: pre-wrap;
+}
+
+/* ====== Scale Display ====== */
+.scale-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+  margin-bottom: 16px;
+}
+.scale-item {
+  background: var(--light); padding: 12px 8px;
+  border-radius: 8px; text-align: center;
+}
+.scale-item-label { font-size: 11px; color: var(--gray); margin-bottom: 4px; }
+.scale-item-value {
+  font-size: 28px; font-weight: 900; color: var(--red);
+}
+.scale-item-max { font-size: 12px; color: var(--gray); }
+
+/* ====== Plan Card ====== */
+.plan-card {
+  background: var(--light); border-radius: 10px;
+  padding: 16px 20px; margin-bottom: 12px;
+  border: 1px solid var(--border);
+}
+.plan-card.priority {
+  border: 2px solid var(--red); background: var(--red-light);
+}
+.plan-title {
+  font-size: 15px; font-weight: 800; color: var(--dark);
+  margin-bottom: 8px;
+}
+.plan-title .plan-num {
+  color: var(--red); margin-right: 4px;
+}
+.plan-detail {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
+  font-size: 13px;
+}
+.plan-detail dt { color: var(--gray); font-weight: 500; }
+.plan-detail dd { color: var(--dark); font-weight: 600; }
+
+/* ====== Prototype Block ====== */
+.proto-block {
+  background: white; border-radius: 10px;
+  padding: 20px; border: 1px solid var(--border);
+  margin-top: 16px;
+}
+.proto-block h4 {
+  font-size: 16px; font-weight: 800; color: var(--dark);
+  margin-bottom: 12px; padding-bottom: 8px;
+  border-bottom: 2px solid var(--red);
+}
+.proto-field { margin-bottom: 12px; }
+.proto-field-label {
+  font-size: 12px; font-weight: 700; color: var(--red);
+  margin-bottom: 4px;
+}
+.proto-field-value {
+  font-size: 14px; color: #374151; line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+/* ====== Vote Results ====== */
+.vote-bar-row { margin-bottom: 14px; }
+.vote-bar-header {
+  display: flex; justify-content: space-between;
+  font-size: 14px; font-weight: 600; margin-bottom: 4px;
+}
+.vote-bar-track {
+  height: 36px; background: var(--light); border-radius: 8px;
+  overflow: hidden; position: relative;
+}
+.vote-bar-fill {
+  height: 100%; background: var(--red); border-radius: 8px;
+  display: flex; align-items: center; padding-left: 12px;
+  color: white; font-size: 13px; font-weight: 700;
+  transition: width 0.6s ease;
+}
+.vote-detail {
+  display: flex; gap: 6px; margin-top: 4px;
+  font-size: 11px; color: var(--gray);
+}
+
+/* ====== No Data ====== */
+.no-data {
+  text-align: center; padding: 48px 20px;
+  color: var(--gray); font-size: 15px;
+}
+
+/* ====== Print Button ====== */
+.print-btn {
+  position: fixed; bottom: 30px; right: 30px;
+  background: var(--red); color: white;
+  border: none; padding: 14px 28px; border-radius: 10px;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(200,16,46,0.3);
+  font-family: inherit; z-index: 100;
+  transition: transform 0.2s;
+}
+.print-btn:hover { transform: translateY(-2px); }
+
+/* ====== Responsive ====== */
+@media (max-width: 768px) {
+  .cover h1 { font-size: 28px; }
+  .cover-meta { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .scale-grid { grid-template-columns: repeat(3, 1fr); }
+  .plan-detail { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loading">
+  <div class="loading-spin"></div>
+  <div style="font-size:16px;font-weight:600">데이터를 불러오는 중...</div>
+</div>
+
+<div id="report"></div>
+
+<button class="print-btn no-print" onclick="window.print()">🖨 PDF 저장 / 인쇄</button>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<script>
+// ============ Firebase ============
+firebase.initializeApp({
+  apiKey: "AIzaSyACZTTEzdrqCz3LGO28R55WmbAboHmY5OY",
+  authDomain: "jb-ax-20f08.firebaseapp.com",
+  databaseURL: "https://jb-ax-20f08-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "jb-ax-20f08",
+});
+const db = firebase.database();
+
+const CLASSES = ['1반', '2반', '3반', '4반', '5반'];
+const TEAMS = ['A팀', 'B팀', 'C팀', 'D팀', 'E팀', 'F팀'];
+const SCALE_LABELS = ['AI Tool 인지·이해', '사용 빈도', '활용 업무 범위', '성과·효율 체감', '조직 내 확산'];
+
+let allData = {};
+let activeClass = 0;
+
+// ============ Load Data ============
+async function loadAllData() {
+  const snap = await db.ref('workshop').once('value');
+  const raw = snap.val() || {};
+  
+  for (let i = 0; i < 5; i++) {
+    const key = 'class_' + i;
+    allData[i] = {
+      submissions: raw[key]?.submissions || {},
+      votes: raw[key]?.votes || {},
+      peers: raw[key]?.peers || {},
+    };
+  }
+  
+  document.getElementById('loading').classList.add('hide');
+  setTimeout(() => document.getElementById('loading').style.display = 'none', 600);
+  renderReport();
+}
+
+// ============ Helpers ============
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function getTotalStats() {
+  let totalTeams = 0, totalPlans = 0, totalProtos = 0, totalVoters = 0;
+  for (let i = 0; i < 5; i++) {
+    const subs = allData[i]?.submissions || {};
+    totalTeams += Object.keys(subs).length;
+    Object.values(subs).forEach(s => {
+      if (s.priority) totalPlans++;
+      if (s.protoDesc) totalProtos++;
+    });
+    totalVoters += Object.keys(allData[i]?.votes || {}).length;
+  }
+  return { totalTeams, totalPlans, totalProtos, totalVoters };
+}
+
+function getClassScoreSummary(cls) {
+  const votes = allData[cls]?.votes || {};
+  const summary = {};
+  for (let i = 0; i < 6; i++) {
+    summary[i] = { s1: 0, s2: 0, s3: 0, s4: 0, total: 0, count: 0 };
+  }
+  Object.values(votes).forEach(voterScores => {
+    Object.entries(voterScores).forEach(([teamIdx, scores]) => {
+      const t = parseInt(teamIdx);
+      if (t >= 0 && t < 6 && scores && typeof scores === 'object') {
+        summary[t].s1 += (scores.s1 || 0);
+        summary[t].s2 += (scores.s2 || 0);
+        summary[t].s3 += (scores.s3 || 0);
+        summary[t].s4 += (scores.s4 || 0);
+        summary[t].total += (scores.s1||0)+(scores.s2||0)+(scores.s3||0)+(scores.s4||0);
+        summary[t].count++;
+      }
+    });
+  });
+  return summary;
+}
+
+// ============ Render ============
+function renderReport() {
+  const stats = getTotalStats();
+  const report = document.getElementById('report');
+  
+  report.innerHTML = `
+    <!-- COVER -->
+    <div class="cover">
+      <div class="cover-inner">
+        <div class="cover-label">LG Electronics · Employee eXperience & Growth</div>
+        <h1>2026 JB AX 역량강화<br><span>Mini Workshop</span> 운영 결과 보고</h1>
+        <div class="cover-sub">각 반별 토론 내용, Action Plan, Prototype 결과물 종합 보고</div>
+        <div class="cover-meta">
+          <dl class="cover-meta-item">
+            <dt>일시</dt>
+            <dd>2026. 4. 23~24, 27~28</dd>
+          </dl>
+          <dl class="cover-meta-item">
+            <dt>장소</dt>
+            <dd>평택 Learning Center</dd>
+          </dl>
+          <dl class="cover-meta-item">
+            <dt>대상</dt>
+            <dd>JB 전체 ~291명</dd>
+          </dl>
+          <dl class="cover-meta-item">
+            <dt>주관</dt>
+            <dd>EXG팀 · AX Center · EXAONE팀</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-container">
+      <!-- STATS -->
+      <div class="section">
+        <div class="section-title">운영 현황 종합</div>
+        <div class="stats-grid">
+          <div class="stat-card highlight">
+            <div class="stat-num">291</div>
+            <div class="stat-label">참가자 (명)</div>
+            <div class="stat-sub">5개 반 운영</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">${stats.totalTeams}</div>
+            <div class="stat-label">팀 워크시트 제출</div>
+            <div class="stat-sub">전체 30팀 중</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">${stats.totalPlans}</div>
+            <div class="stat-label">Action Plan 도출</div>
+            <div class="stat-sub">팀별 최우선 Plan</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">${stats.totalProtos}</div>
+            <div class="stat-label">Prototype 제작</div>
+            <div class="stat-sub">AI Tool 활용</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLASS TABS -->
+      <div class="section">
+        <div class="section-title">반별 상세 결과 <span class="badge">토론 · Plan · Prototype</span></div>
+        <div class="class-tabs no-print">
+          ${CLASSES.map((name, i) => {
+            const subCount = Object.keys(allData[i]?.submissions || {}).length;
+            return `<div class="class-tab ${i===activeClass?'active':''}" onclick="switchClass(${i})">${name} (${subCount}팀)</div>`;
+          }).join('')}
+          <div class="class-tab" onclick="showAllClasses()" style="background:var(--dark);color:white;border-color:var(--dark)">전체 보기</div>
+        </div>
+        <div id="class-content"></div>
+      </div>
+
+      <!-- VOTE RESULTS -->
+      <div class="section page-break">
+        <div class="section-title">심사 투표 결과 <span class="badge">전체 반</span></div>
+        <div id="vote-content"></div>
+      </div>
+    </div>
+  `;
+
+  renderClassContent();
+  renderVoteResults();
+}
+
+function switchClass(idx) {
+  activeClass = idx;
+  document.querySelectorAll('.class-tab').forEach((t, i) => {
+    t.classList.toggle('active', i === idx);
+  });
+  renderClassContent();
+}
+
+function showAllClasses() {
+  document.querySelectorAll('.class-tab').forEach(t => t.classList.remove('active'));
+  const container = document.getElementById('class-content');
+  let html = '';
+  for (let c = 0; c < 5; c++) {
+    html += `<h2 style="font-size:22px;font-weight:900;color:var(--red);margin:32px 0 16px;padding-top:20px;border-top:3px solid var(--border)">${CLASSES[c]}</h2>`;
+    html += renderClassTeams(c);
+  }
+  container.innerHTML = html;
+}
+
+function renderClassContent() {
+  const container = document.getElementById('class-content');
+  container.innerHTML = renderClassTeams(activeClass);
+}
+
+function renderClassTeams(cls) {
+  const subs = allData[cls]?.submissions || {};
+  if (Object.keys(subs).length === 0) {
+    return `<div class="no-data">📭 ${CLASSES[cls]}에 제출된 워크시트가 없습니다.</div>`;
+  }
+
+  return TEAMS.map((teamName, i) => {
+    const sub = subs[i];
+    if (!sub) return '';
+
+    const displayName = sub.teamName || teamName;
+    const members = (sub.members || []).filter(m => m);
+    const roles = sub.roles || [];
+    const scale = sub.scale || [0,0,0,0,0];
+    const plans = (sub.plans || []).filter(p => p.area);
+
+    return `
+      <div class="team-card">
+        <div class="team-header">
+          <h3>${esc(displayName)}</h3>
+          <span class="team-badge">${CLASSES[cls]} ${teamName}</span>
+        </div>
+        <div class="team-body">
+          
+          <!-- 팀원 -->
+          ${members.length > 0 ? `
+            <div class="team-members">
+              ${members.map((m, mi) => `<span class="member-chip">${esc(m)}${roles[mi] ? ` · ${esc(roles[mi])}` : ''}</span>`).join('')}
+            </div>
+          ` : ''}
+          ${sub.keyword ? `<div style="margin-bottom:16px"><span style="background:var(--dark);color:white;padding:4px 12px;border-radius:4px;font-size:12px;font-weight:700">키워드: ${esc(sub.keyword)}</span></div>` : ''}
+
+          <!-- AI Tool 활용 리뷰 -->
+          ${(sub.q1 || sub.q2 || sub.q3) ? `
+            <div style="margin-bottom:20px">
+              <h4 style="font-size:16px;font-weight:800;color:var(--dark);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--red)">AI Tool 활용 리뷰</h4>
+              ${sub.q1 ? `
+                <div class="qa-block">
+                  <div class="qa-label">Q1</div>
+                  <div class="qa-question">어떤 AI Tool을 써봤나요?</div>
+                  <div class="qa-answer">${esc(sub.q1)}</div>
+                </div>
+              ` : ''}
+              ${sub.q2 ? `
+                <div class="qa-block">
+                  <div class="qa-label">Q2</div>
+                  <div class="qa-question">가장 인상 깊었던 경험은?</div>
+                  <div class="qa-answer">${esc(sub.q2)}</div>
+                </div>
+              ` : ''}
+              ${sub.q3 ? `
+                <div class="qa-block">
+                  <div class="qa-label">Q3</div>
+                  <div class="qa-question">우리 업무에 연결된다면?</div>
+                  <div class="qa-answer">${esc(sub.q3)}</div>
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+
+          <!-- AX 현황 진단 -->
+          ${scale.some(v => v > 0) ? `
+            <div style="margin-bottom:20px">
+              <h4 style="font-size:16px;font-weight:800;color:var(--dark);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--red)">AX 현황 진단</h4>
+              <div class="scale-grid">
+                ${SCALE_LABELS.map((label, si) => `
+                  <div class="scale-item">
+                    <div class="scale-item-label">${label}</div>
+                    <div class="scale-item-value">${scale[si] || '-'}<span class="scale-item-max"> /5</span></div>
+                  </div>
+                `).join('')}
+              </div>
+              ${sub.diagnosis ? `<div class="qa-answer" style="margin-top:8px">${esc(sub.diagnosis)}</div>` : ''}
+            </div>
+          ` : ''}
+
+          <!-- Action Plans -->
+          ${plans.length > 0 ? `
+            <div style="margin-bottom:20px">
+              <h4 style="font-size:16px;font-weight:800;color:var(--dark);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--red)">Action Plans</h4>
+              ${plans.map((p, pi) => `
+                <div class="plan-card">
+                  <div class="plan-title"><span class="plan-num">Plan ${pi+1}</span> ${esc(p.area)}</div>
+                  <div class="plan-detail">
+                    <dt>AI Tool</dt><dd>${esc(p.tool || '-')}</dd>
+                    <dt>기대 효과</dt><dd>${esc(p.effect || '-')}</dd>
+                    <dt>실행 시기</dt><dd>${esc(p.time || '-')}</dd>
+                    <dt>담당자</dt><dd>${esc(p.who || '-')}</dd>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          <!-- 최우선 Action Plan -->
+          ${sub.priority ? `
+            <div style="margin-bottom:20px">
+              <h4 style="font-size:16px;font-weight:800;color:var(--dark);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--red)">🏆 최우선 Action Plan</h4>
+              <div class="plan-card priority">
+                <div class="plan-title" style="font-size:18px;color:var(--red)">${esc(sub.priority)}</div>
+                ${sub.reason ? `<div style="font-size:14px;margin-top:8px"><strong>선정 이유:</strong> ${esc(sub.reason)}</div>` : ''}
+                ${sub.expected ? `<div style="font-size:14px;margin-top:4px"><strong>기대 효과:</strong> ${esc(sub.expected)}</div>` : ''}
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- PT 제작 -->
+          ${sub.ptPerson ? `
+            <div class="proto-block">
+              <h4>📑 발표용 PT 제작</h4>
+              <div style="font-size:14px;margin-bottom:12px">
+                <strong>담당자:</strong> ${esc(sub.ptPerson)} · <strong>AI Tool:</strong> ${esc(sub.ptTool || '-')}
+              </div>
+              ${(sub.ptSlides || []).some(s => s) ? `
+                ${['팀 소개','AI 경험','AX 현황','Action Plan','최우선 Plan','Prototype'].map((label, si) => 
+                  (sub.ptSlides||[])[si] ? `
+                    <div style="margin-bottom:6px;padding:8px 14px;background:var(--light);border-radius:6px;border-left:3px solid var(--red);font-size:13px">
+                      <strong style="color:var(--red)">${si+1}.</strong> ${esc(sub.ptSlides[si])}
+                    </div>
+                  ` : ''
+                ).join('')}
+              ` : ''}
+            </div>
+          ` : ''}
+
+          <!-- Prototype -->
+          ${(sub.protoDesc || sub.protoPerson) ? `
+            <div class="proto-block" style="margin-top:16px">
+              <h4>🔧 Prototype 제작 결과</h4>
+              <div style="font-size:14px;margin-bottom:12px">
+                <strong>담당자:</strong> ${esc(sub.protoPerson || '-')} · 
+                <strong>AI Tool:</strong> ${esc(sub.protoTool || '-')}
+                ${sub.protoType ? ` · <strong>유형:</strong> ${esc(sub.protoType)}` : ''}
+              </div>
+              ${sub.protoDesc ? `
+                <div class="proto-field">
+                  <div class="proto-field-label">무엇을 만들었나요?</div>
+                  <div class="proto-field-value">${esc(sub.protoDesc)}</div>
+                </div>
+              ` : ''}
+              ${sub.protoResult ? `
+                <div class="proto-field">
+                  <div class="proto-field-label">결과물</div>
+                  <div class="proto-field-value">${esc(sub.protoResult)}</div>
+                </div>
+              ` : ''}
+              ${sub.protoLesson ? `
+                <div class="proto-field">
+                  <div class="proto-field-label">배운 점 · 아쉬운 점</div>
+                  <div class="proto-field-value">${esc(sub.protoLesson)}</div>
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderVoteResults() {
+  const container = document.getElementById('vote-content');
+  let html = '';
+
+  for (let c = 0; c < 5; c++) {
+    const subs = allData[c]?.submissions || {};
+    const summary = getClassScoreSummary(c);
+    const voterCount = Object.keys(allData[c]?.votes || {}).length;
+    const maxTotal = Math.max(...Object.values(summary).map(s => s.total), 1);
+
+    if (voterCount === 0) continue;
+
+    html += `
+      <div style="margin-bottom:32px">
+        <h3 style="font-size:18px;font-weight:800;margin-bottom:4px">${CLASSES[c]}</h3>
+        <div style="font-size:13px;color:var(--gray);margin-bottom:16px">채점 참여: ${voterCount}명</div>
+        ${TEAMS.map((name, i) => {
+          const sub = subs[i];
+          const teamName = sub ? (sub.teamName || name) : name;
+          const s = summary[i];
+          const pct = maxTotal > 0 ? Math.round(s.total / maxTotal * 100) : 0;
+          const avg = s.count > 0 ? Math.round(s.total / s.count) : 0;
+          if (s.total === 0 && s.count === 0) return '';
+          return `
+            <div class="vote-bar-row">
+              <div class="vote-bar-header">
+                <span>${esc(teamName)}</span>
+                <span style="color:var(--red)">${s.total}점 ${s.count > 0 ? `(평균 ${avg})` : ''}</span>
+              </div>
+              <div class="vote-bar-track">
+                <div class="vote-bar-fill" style="width:${pct}%">${s.total > 0 ? s.total : ''}</div>
+              </div>
+              <div class="vote-detail">
+                <span>실현가능성 ${s.s1}</span> · <span>완성도 ${s.s2}</span> · <span>발표 ${s.s3}</span> · <span>참여도 ${s.s4}</span>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  if (!html) {
+    html = '<div class="no-data">📭 아직 투표 결과가 없습니다.</div>';
+  }
+
+  container.innerHTML = html;
+}
+
+// ============ Init ============
+loadAllData();
+</script>
+
+</body>
+</html>
